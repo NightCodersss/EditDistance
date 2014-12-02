@@ -106,7 +106,7 @@ void Transducer::readFromFile(std::istream& in)
         int weight;
 
         in >> start >> in >> out >> weight >> end;
-        new_states[start].connectTo(end, in, out, weight);
+        new_states[start]->connectTo(new_states[end], in, out, weight);
     }
 
     initial_state = new_states[0];
