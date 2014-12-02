@@ -1,0 +1,17 @@
+CC=clang++
+CFLAGS=-std=c++11 -g -c
+LDFLAGS=
+SOURCES=transducer.cpp main.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=editdistance
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE) : $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+clean:
+	rm -rf $(OBJECTS) $(EXECUTABLE)
