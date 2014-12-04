@@ -4,6 +4,8 @@
 
 int main()
 {
+    std::cout << "OLOLO " << EPS << '\n';
+
     Transducer t1;
 
     std::ifstream in1("t1.trans");

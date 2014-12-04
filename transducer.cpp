@@ -1,8 +1,8 @@
 #include "transducer.hpp"
 
-Edge::Edge(State* end, char in, char out, int weight) : end(end), in(in), out(out), weight(weight) { }
+Edge::Edge(State* end, char_type in, char_type out, int weight) : end(end), in(in), out(out), weight(weight) { }
 
-void State::connectTo(State* s, char i, char o, int w)
+void State::connectTo(State* s, char_type i, char_type o, int w)
 {
     edges.emplace_back(s, i, o, w);
 }
@@ -14,6 +14,9 @@ void Transducer::addState(State* newstate)
     
 Transducer Transducer::composition(Transducer transducer)
 {
+    for ( auto& state : transducer.states )
+        state->connectTo(state, EPS, EPS, 0);
+
     Transducer product;
     
     std::queue< std::pair<State*, State*> > queue;
@@ -102,11 +105,11 @@ void Transducer::readFromFile(std::istream& in)
     for ( int i = 0; i < number_of_transitions; ++i )
     {
         int start, end;
-        char in, out; 
+        char_type inp, out; 
         int weight;
 
-        in >> start >> in >> out >> weight >> end;
-        new_states[start]->connectTo(new_states[end], in, out, weight);
+        in >> start >> inp >> out >> weight >> end;
+        new_states[start]->connectTo(new_states[end], inp, out, weight);
     }
 
     initial_state = new_states[0];
