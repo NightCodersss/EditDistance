@@ -1,4 +1,5 @@
 #include "transducer.hpp"
+#include <iostream>
 
 Edge::Edge(State* end, char_type in, char_type out, int weight) : end(end), in(in), out(out), weight(weight) { }
 
@@ -115,4 +116,52 @@ void Transducer::readFromFile(std::istream& in)
     initial_state = new_states[0];
     for ( auto state : new_states )
         addState(state);
+}
+    
+std::vector<Edge> Transducer::minWay()
+{
+    const int INF = 1000000000;
+
+    std::set< std::pair<int, State*> > q;
+    std::map< State*, int > d;
+    std::map< State*, State* > p;
+    
+    for ( auto state : states )
+        d[state] = INF;
+
+    d[initial_state] = 0;
+    
+    for ( auto state : states )
+    {
+        q.insert({d[state], state});
+        p[state] = nullptr;
+    }
+
+    while ( !q.empty() )
+    {
+        State* s = std::begin(q) -> second;
+        q.erase(std::begin(q));
+
+        for ( auto edge : s -> edges )
+        {
+            if ( d[edge.end] > d[s] + edge.weight )
+            {
+                q.erase({d[s], s});
+                d[edge.end] = d[s] + edge.weight;
+                q.insert({d[s], s});
+
+                p[edge.end] = s;
+            }
+        }
+    }
+
+    for ( auto state : states )
+    {
+        std::cout << "State:    " << (reinterpret_cast<long long>(state) % 10000) << '\n'
+                  << "Distance: " << d[state] << '\n'
+                  << "Parent:   " << (reinterpret_cast<long long>(p[state]) % 10000) << '\n';
+        std::cout << '\n';
+    }
+
+    return { };
 }

@@ -27,5 +27,15 @@ int main()
     in1.close();
     in2.close();    
 
+    t1.minWay();
+    std::cout << "..............................";
+    std::cout << '\n';
+    t2.minWay();
+    std::cout << "..............................";
+    std::cout << '\n';
+    t.minWay();
+    std::cout << "..............................";
+    std::cout << '\n';
+
     return 0;
 }

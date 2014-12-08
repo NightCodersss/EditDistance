@@ -5,6 +5,7 @@
 #include <vector>
 #include <queue>
 #include <map>
+#include <set>
 #include <string>
 
 using char_type = std::string;
@@ -45,6 +46,8 @@ public:
     void visualize(std::ostream& out);
     
     void setInitialState(State* s);
+
+    std::vector<Edge> minWay();
 
 private:
 
