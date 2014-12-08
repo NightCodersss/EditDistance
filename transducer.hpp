@@ -46,12 +46,14 @@ public:
     void visualize(std::ostream& out);
     
     void setInitialState(State* s);
+    void setFinalState(State* s);
 
     std::vector<Edge> minWay();
 
 private:
 
     State* initial_state;
+    State* final_state;
     std::vector<State*> states;
 };
 

@@ -91,6 +91,11 @@ void Transducer::setInitialState(State* s)
 {
     initial_state = s;
 }
+    
+void Transducer::setFinalState(State* s)
+{
+    final_state = s;
+}
 
 void Transducer::readFromFile(std::istream& in)
 {
@@ -113,7 +118,9 @@ void Transducer::readFromFile(std::istream& in)
         new_states[start]->connectTo(new_states[end], inp, out, weight);
     }
 
-    initial_state = new_states[0];
+    initial_state = new_states.front();
+    final_state   = new_states.back();
+
     for ( auto state : new_states )
         addState(state);
 }
