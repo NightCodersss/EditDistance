@@ -4,36 +4,38 @@
 
 int main()
 {
-    std::cout << "OLOLO " << EPS << '\n';
+    Transducer X;
 
-    Transducer t1;
+    std::ifstream in1("x.trans");
 
-    std::ifstream in1("t1.trans");
+    X.readFromFile(in1);
+    X.addEpsilonTransitions();
+    X.visualize(std::cout);
 
-    t1.readFromFile(in1);
-    t1.visualize(std::cout);
 
-    Transducer t2;
+    Transducer T;
 
-    std::ifstream in2("t2.trans");
+    std::ifstream in2("t.trans");
     
-    t2.readFromFile(in2);
-    t2.visualize(std::cout);
+    T.readFromFile(in2);
+    T.visualize(std::cout);
 
-    Transducer t = t1.composition(t2);
+    Transducer A;
 
-    t.visualize(std::cout);
+    std::ifstream in3("a.trans");
+
+    A.readFromFile(in3);
+    A.visualize(std::cout);
+
+    Transducer U = X.composition(T).composition(A);
+
+    U.visualize(std::cout);
 
     in1.close();
     in2.close();    
+    in3.close();
 
-    t1.minWay();
-    std::cout << "..............................";
-    std::cout << '\n';
-    t2.minWay();
-    std::cout << "..............................";
-    std::cout << '\n';
-    t.minWay();
+    U.minWay();
     std::cout << "..............................";
     std::cout << '\n';
 

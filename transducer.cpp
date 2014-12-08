@@ -12,12 +12,17 @@ void Transducer::addState(State* newstate)
 {
     states.push_back(newstate);
 }
+
+void Transducer::addEpsilonTransitions()
+{
+    for ( auto& state : states )
+        state->connectTo(state, EPS, EPS, 0);
+}
     
 Transducer Transducer::composition(Transducer transducer)
 {
-    for ( auto& state : transducer.states )
-        state->connectTo(state, EPS, EPS, 0);
-
+    transducer.addEpsilonTransitions();
+        
     Transducer product;
     
     std::queue< std::pair<State*, State*> > queue;
@@ -75,7 +80,7 @@ void Transducer::visualize(std::ostream& out)
     for ( auto state : states )
     {
         for ( auto edge : state->edges )
-            out << (reinterpret_cast<long long>(state) % 10000)
+            out << (reinterpret_cast<long long>(state) % 10000) << ' '
                 << edge.in 
                 << ':' 
                 << edge.out 
@@ -101,8 +106,8 @@ void Transducer::readFromFile(std::istream& in)
 {
     states.clear();
 
-    int number_of_states, number_of_transitions;
-    in >> number_of_states >> number_of_transitions;
+    int number_of_states, number_of_transitions, _final_state;
+    in >> number_of_states >> number_of_transitions >> _final_state;
 
     std::vector<State*> new_states(number_of_states);
     for ( auto& state : new_states )
@@ -118,8 +123,8 @@ void Transducer::readFromFile(std::istream& in)
         new_states[start]->connectTo(new_states[end], inp, out, weight);
     }
 
-    initial_state = new_states.front();
-    final_state   = new_states.back();
+    initial_state = new_states[0];
+    final_state   = new_states[_final_state];
 
     for ( auto state : new_states )
         addState(state);
@@ -153,9 +158,9 @@ std::vector<Edge> Transducer::minWay()
         {
             if ( d[edge.end] > d[s] + edge.weight )
             {
-                q.erase({d[s], s});
+                q.erase({d[edge.end], edge.end});
                 d[edge.end] = d[s] + edge.weight;
-                q.insert({d[s], s});
+                q.insert({d[edge.end], edge.end});
 
                 p[edge.end] = s;
             }

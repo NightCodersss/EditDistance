@@ -50,6 +50,8 @@ public:
 
     std::vector<Edge> minWay();
 
+    void addEpsilonTransitions();
+
 private:
 
     State* initial_state;
