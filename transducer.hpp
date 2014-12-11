@@ -39,6 +39,8 @@ class Transducer
 {
 public:
 
+    static Transducer fromRegexp(std::string regexp);
+
     void addState(State* newstate);
     Transducer composition(Transducer transducer);
 
@@ -51,6 +53,11 @@ public:
     std::vector<Edge> minWay();
 
     void addEpsilonTransitions();
+
+    static Transducer matchChar(char_type c);
+    static Transducer concat(Transducer a, Transducer b);
+    static Transducer klenee(Transducer a);
+    static Transducer orTransducer(Transducer a, Transducer b);
 
 private:
 

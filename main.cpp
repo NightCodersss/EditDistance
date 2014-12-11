@@ -4,6 +4,7 @@
 
 int main()
 {
+    /*
     Transducer X;
 
     std::ifstream in1("x.trans");
@@ -11,7 +12,6 @@ int main()
     X.readFromFile(in1);
     X.addEpsilonTransitions();
     X.visualize(std::cout);
-
 
     Transducer T;
 
@@ -38,6 +38,10 @@ int main()
     U.minWay();
     std::cout << "..............................";
     std::cout << '\n';
+*/
+
+    Transducer t = Transducer::fromRegexp("1|2*");
+    t.visualize(std::cout);
 
     return 0;
 }

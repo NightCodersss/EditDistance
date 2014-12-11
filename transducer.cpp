@@ -1,5 +1,7 @@
 #include "transducer.hpp"
+#include "regexpparser.hpp"
 #include <iostream>
+#include <cstdlib>
 
 Edge::Edge(State* end, char_type in, char_type out, int weight) : end(end), in(in), out(out), weight(weight) { }
 
@@ -76,7 +78,8 @@ Transducer Transducer::composition(Transducer transducer)
 void Transducer::visualize(std::ostream& out)
 {
     out << "Transducer:\n";
-    out << "Initial state: " << (reinterpret_cast<long long>(initial_state) % 10000) << '\n';
+    out << "Initial state: " << (reinterpret_cast<long long>(initial_state) % 10000) << '\n' 
+        << "Final state: " << (reinterpret_cast<long long>(final_state) % 10000) << '\n';
     for ( auto state : states )
     {
         for ( auto edge : state->edges )
@@ -176,4 +179,83 @@ std::vector<Edge> Transducer::minWay()
     }
 
     return { };
+}
+
+Transducer Transducer::matchChar(char_type c)
+{
+    Transducer t;
+
+    t.initial_state = new State();
+    t.final_state   = new State();
+
+    t.addState(t.initial_state);
+    t.addState(t.final_state);
+
+    t.initial_state -> connectTo(t.final_state, c, c, 0);
+    return t;
+}
+
+Transducer Transducer::klenee(Transducer a)
+{
+    a.final_state -> connectTo(a.initial_state, EPS, EPS, 0);
+
+    State* new_initial = new State();
+    State* new_final   = new State();
+
+    new_initial -> connectTo(a.initial_state, EPS, EPS, 0);
+    new_initial -> connectTo(new_final, EPS, EPS, 0);
+
+    a.final_state -> connectTo(new_final, EPS, EPS, 0);
+
+    a.addState(new_initial);
+    a.addState(new_final);
+
+    a.setInitialState(new_initial);
+    a.setFinalState(new_final);
+
+    return a;
+}
+
+Transducer Transducer::orTransducer(Transducer a, Transducer b)
+{
+    State* new_initial = new State();
+    State* new_final   = new State();
+
+    Transducer t;
+
+    for ( auto state : a.states )
+        t.addState(state);
+
+    for ( auto state : b.states )
+        t.addState(state);
+
+    t.addState(new_initial);
+    t.addState(new_final);
+
+    new_initial -> connectTo(a.initial_state, EPS, EPS, 0);
+    new_initial -> connectTo(b.initial_state, EPS, EPS, 0);
+
+    a.final_state -> connectTo(new_final, EPS, EPS, 0);
+    b.final_state -> connectTo(new_final, EPS, EPS, 0);
+
+    t.setInitialState(new_initial);
+    t.setFinalState(new_final);
+
+    return t;
+}
+
+Transducer Transducer::concat(Transducer a, Transducer b)
+{
+    for ( auto state : b.states )
+        a.addState(state);
+
+    a.final_state -> connectTo(b.initial_state, EPS, EPS, 0);
+    a.setFinalState(b.final_state);
+
+    return a;
+}
+
+Transducer Transducer::fromRegexp(std::string regexp)
+{
+    return RegexpParser().parse(regexp);
 }
