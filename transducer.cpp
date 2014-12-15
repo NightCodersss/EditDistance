@@ -2,6 +2,8 @@
 #include "regexpparser.hpp"
 #include <iostream>
 #include <cstdlib>
+#include <algorithm>
+#include <sstream>
 
 Edge::Edge(State* end, char_type in, char_type out, int weight) : end(end), in(in), out(out), weight(weight) { }
 
@@ -70,7 +72,8 @@ Transducer Transducer::composition(Transducer transducer)
         }
     }
 
-    product.initial_state = newstates[std::make_pair(initial_state, transducer.initial_state)];
+    product.initial_state = newstates.at(std::make_pair(initial_state, transducer.initial_state));
+    product.final_state = newstates.at(std::make_pair(final_state, transducer.final_state));
 
     return product;
 }
@@ -178,7 +181,34 @@ std::vector<Edge> Transducer::minWay()
         std::cout << '\n';
     }
 
-    return { };
+    std::vector<Edge> path;
+    for ( State* s = final_state; p[s] != NULL; s = p[s] )
+    {
+        State* q = p[s];
+
+        for ( auto edge : q -> edges )
+        {
+            if ( edge.end == s )
+            {
+                path.push_back(edge);
+                break;
+            }
+        }
+    }
+    std::reverse(std::begin(path), std::end(path));
+
+    std::cout << "...............................\n\n";
+    std::cout << "Path: \n";
+
+    std::cout << "Initial state: " << (reinterpret_cast<long long>(initial_state) % 10000) << '\n';
+    for ( auto edge : path )
+    {
+        std::cout << edge.in << ':' << edge.out << ' ' << edge.weight << ' ' 
+        << (reinterpret_cast<long long>(edge.end) % 10000) << '\n';
+    }
+    std::cout << '\n';
+
+    return path;
 }
 
 Transducer Transducer::matchChar(char_type c)
