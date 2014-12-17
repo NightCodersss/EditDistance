@@ -14,6 +14,25 @@ const char_type EPS = std::string("ε");
 
 class State;
 
+struct IO
+{
+    enum class IOType { UnionUnion, UnionLetter, LetterLetter };
+
+    IO(const IntervalUnion& u);
+    IO(const IntervalUnion& u, char_type out);
+    IO(char_type in, char_type out);
+
+    bool canBeConnectedTo(const IO& io);
+    IO connectTo(const IO& io);
+
+    IOType type;
+
+    IntervalUnion u;
+
+    char_type in;
+    char_type out;
+};
+
 struct Edge
 {
     Edge(State* end, char_type in, char_type out, int weight);

@@ -11,6 +11,11 @@ IntervalUnion IntervalUnion::changeComplement()
     return *this;
 }
 
+bool IntervalUnion::isEmpty() 
+{
+    return intervals.empty();
+}
+
 IntervalUnion IntervalUnion::intersection(const IntervalUnion& iu)
 {
     if ( !is_complement && !iu.is_complement )

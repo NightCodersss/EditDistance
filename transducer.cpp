@@ -5,6 +5,81 @@
 #include <algorithm>
 #include <sstream>
 
+IO::IO(const IntervalUnion& u) : u(u), type(IOType::UnionUnion) { }
+IO::IO(const IntervalUnion& u, char_type out) : u(u), out(out), type(IOType::UnionLetter) { }
+IO::IO(char_type in, char_type out) : in(in), out(out), type(IOType::LetterLetter) { }
+
+bool IO::canBeConnectedTo(const IO& io)
+{
+    return !connectTo(io).isEmpty();
+}
+
+IO IO::connectTo(const IO& io)
+{   
+    if ( type == IOType::UnionUnion )
+    {
+        if ( io.type == IOType::UnionUnion )
+            return IO(u.intersection(io.u));
+        else if ( io.type == IOType::UnionLetter )
+            return IO(u.intersection(io.u), io.out);
+        else
+        {
+            if ( u.isIn(io.in) )
+                return IO(io.in, io.out);
+            else
+                return IO({ });
+        }
+    }
+    else if ( type == IOType::UnionLetter )
+    {
+        if ( io.type == IOType::UnionUnion )
+        {
+            if ( io.u.isIn(out) )
+                return IO(u, out);
+            else
+                return IO({ });
+        }
+        else if ( io.type == IOType::UnionLetter )
+        {
+            if ( io.u.isIn(out) )
+                return IO(u, io.out);
+            else
+                return IO({ });
+        }
+        else //IOType::LetterLetter
+        {
+            if ( io.in == out )
+                return IO(u, io.out);
+            else
+                return IO({ });
+        }        
+    }
+    else //IOType::LetterLetter
+    {
+        if ( io.type == IOType::UnionUnion )
+        {
+            if ( io.u.isIn(out) )
+                return IO(in, out);
+            else
+                return IO({ });
+        }
+        else if ( io.type == IOType::UnionLetter )
+        {
+            if ( io.u.isIn(out) )
+                return IO(in, io.out);
+            else
+                return IO({ });
+        }
+        else //IOType::LetterLetter
+        {
+            if ( io.in == out )
+                return IO(in, io.out);
+            else
+                return IO({ });
+        }
+    }
+}
+
 Edge::Edge(State* end, char_type in, char_type out, int weight) : end(end), in(in), out(out), weight(weight) { }
 
 void State::connectTo(State* s, char_type i, char_type o, int w)

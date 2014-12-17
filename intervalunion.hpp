@@ -16,6 +16,8 @@ public:
 
     bool isIn(int k);
 
+    bool isEmpty();
+
 private:
 
     IntervalUnion internalIntersection(const IntervalUnion& iu);
