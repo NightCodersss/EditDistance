@@ -55,13 +55,22 @@ IntervalUnion IntervalUnion::internalIntersection(const IntervalUnion& iu)
 
     std::sort(std::begin(v), std::end(v));
 
+    int balance = 0;
+
     int lastX = v.front().first;
     for ( auto event : v )
     {
         if ( event.second == 0 )
+        {
             lastX = event.first;
+            ++balance;
+        }
         else
-            ans.insert({lastX, event.first});
+        {
+            if ( balance )
+                ans.insert({lastX, event.first});
+            --balance;
+        }
     }
 
     return IntervalUnion(false, ans);
