@@ -7,10 +7,12 @@
 #include <map>
 #include <set>
 #include <string>
+#include "intervalunion.hpp"
 
-using char_type = std::string;
+using char_type = int;
+const char_type EPS = -1;
 
-const char_type EPS = std::string("ε");
+using string_type = std::vector<char_type>;
 
 class State;
 
@@ -22,10 +24,17 @@ struct IO
     IO(const IntervalUnion& u, char_type out);
     IO(char_type in, char_type out);
 
-    bool canBeConnectedTo(const IO& io);
-    IO connectTo(const IO& io);
+    bool canBeCompositedTo(const IO& io) const;
+    IO composition(const IO& io) const;
+
+    std::string toString() const;
+    bool isEmpty() const;
 
     IOType type;
+
+// if output is IU (interval union) then input == output == u
+// if output is letter, input == u && output == out
+// if input is letter then input == in && output == out
 
     IntervalUnion u;
 
@@ -35,11 +44,10 @@ struct IO
 
 struct Edge
 {
-    Edge(State* end, char_type in, char_type out, int weight);
+    Edge(State* end, IO io, int weight);
 
     State* end;
-    char_type in;
-    char_type out;
+    IO io;
     int weight; 
 };
 
@@ -48,7 +56,7 @@ class State
     friend class Transducer;
 
 public:
-    void connectTo(State* s, char_type i, char_type o, int w);
+    void connectTo(State* s, IO io, int w);
 
 private:
     std::vector<Edge> edges;
@@ -58,7 +66,7 @@ class Transducer
 {
 public:
 
-    static Transducer fromRegexp(std::string regexp);
+    static Transducer fromRegexp(string_type regexp);
 
     void addState(State* newstate);
     Transducer composition(Transducer transducer);

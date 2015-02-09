@@ -2,14 +2,14 @@
 #include <ctype.h>
 #include <stdexcept>
 
-Transducer RegexpParser::parse(std::string _regexp)
+Transducer RegexpParser::parse(string_type _regexp)
 {
     regexp = _regexp;
     pos = 0;
 
     Transducer t = parseOr();
 
-    if ( pos != regexp.length() )
+    if ( pos != regexp.size() )
         throw std::logic_error("Wrong syntax in regular expression");
 
     return t;
@@ -17,15 +17,15 @@ Transducer RegexpParser::parse(std::string _regexp)
 
 void RegexpParser::consume()
 {
-    if ( pos < regexp.length() )
+    if ( pos < regexp.size() )
     {
         ++pos;
-        while ( pos < regexp.length() && isspace(regexp[pos]) )
+        while ( pos < regexp.size() && isspace(regexp[pos]) )
             ++pos;
     }
 }
 
-void RegexpParser::match(char c)
+void RegexpParser::match(char_type c)
 {
     if ( regexp[pos] != c )
         throw std::logic_error("Wrong syntax in regular expression");
@@ -58,11 +58,9 @@ Transducer RegexpParser::parseKlenee()
     }
     else
     {
-        t = Transducer::matchChar(std::string("") + regexp[pos]);
+        t = Transducer::matchChar(regexp[pos]);
         consume();
     }
-
-
 
     if ( regexp[pos] == '*' )
     {

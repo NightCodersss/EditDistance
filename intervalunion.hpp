@@ -2,27 +2,31 @@
 #define _INTERVALUNION_HPP_
 
 #include <set>
+#include <string>
 
 class IntervalUnion
 {
 public:
 
-    IntervalUnion(bool is_complement);
+    IntervalUnion(bool is_complement, std::set< std::pair<int, int> > intervals);
 
     void addInterval(std::pair<int, int> interval);
 
-    IntervalUnion intersection(const IntervalUnion& iu);
-    IntervalUnion unite(const IntervalUnion& iu);
+    IntervalUnion changeComplement();
 
-    bool isIn(int k);
+    IntervalUnion intersection(const IntervalUnion& iu) const;
+    IntervalUnion unite(const IntervalUnion& iu) const;
 
-    bool isEmpty();
+    bool isIn(int k) const;
+    bool isEmpty() const;
+
+    std::string toString() const;
 
 private:
 
-    IntervalUnion internalIntersection(const IntervalUnion& iu);
-    IntervalUnion internalUnite(const IntervalUnion& iu);
-    IntervalUnion internalDifference(const IntervalUnion& iu);
+    IntervalUnion internalIntersection(const IntervalUnion& iu) const;
+    IntervalUnion internalUnite(const IntervalUnion& iu) const;
+    IntervalUnion internalDifference(const IntervalUnion& iu) const;
 
     bool is_complement;
     std::set< std::pair<int, int> > intervals;

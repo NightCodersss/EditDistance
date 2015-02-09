@@ -8,7 +8,7 @@ class RegexpParser
 {
 public:
 
-    Transducer parse(std::string regexp);
+    Transducer parse(string_type regexp);
 
 private:
 
@@ -17,11 +17,11 @@ private:
     Transducer parseConcat();
 
     void consume();
-    void match(char c);
+    void match(char_type c);
 
 private:    
 
-    std::string regexp;
+    string_type regexp;
     size_t pos;
 };
 

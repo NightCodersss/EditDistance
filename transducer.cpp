@@ -5,16 +5,19 @@
 #include <algorithm>
 #include <sstream>
 
-IO::IO(const IntervalUnion& u) : u(u), type(IOType::UnionUnion) { }
-IO::IO(const IntervalUnion& u, char_type out) : u(u), out(out), type(IOType::UnionLetter) { }
-IO::IO(char_type in, char_type out) : in(in), out(out), type(IOType::LetterLetter) { }
+IO::IO(const IntervalUnion& u) : type(IOType::UnionUnion), u(u) { }
+IO::IO(const IntervalUnion& u, char_type out) : type(IOType::UnionLetter), u(u), out(out) { }
+IO::IO(char_type in, char_type out) : type(IOType::LetterLetter), u(false, {}), in(in), out(out) { }
+    
+std::string IO::toString() const { return "io"; }
+bool IO::isEmpty() const { return u.isEmpty() && (type == IOType::UnionUnion || type == IOType::UnionLetter); }
 
-bool IO::canBeConnectedTo(const IO& io)
+bool IO::canBeCompositedTo(const IO& io) const
 {
-    return !connectTo(io).isEmpty();
+    return !composition(io).isEmpty(); // not empty intersection
 }
 
-IO IO::connectTo(const IO& io)
+IO IO::composition(const IO& io) const
 {   
     if ( type == IOType::UnionUnion )
     {
@@ -27,7 +30,7 @@ IO IO::connectTo(const IO& io)
             if ( u.isIn(io.in) )
                 return IO(io.in, io.out);
             else
-                return IO({ });
+                return IO(IntervalUnion(false, { }));
         }
     }
     else if ( type == IOType::UnionLetter )
@@ -37,21 +40,21 @@ IO IO::connectTo(const IO& io)
             if ( io.u.isIn(out) )
                 return IO(u, out);
             else
-                return IO({ });
+                return IO(IntervalUnion(false, { }));
         }
         else if ( io.type == IOType::UnionLetter )
         {
             if ( io.u.isIn(out) )
                 return IO(u, io.out);
             else
-                return IO({ });
+                return IO(IntervalUnion(false, { }));
         }
         else //IOType::LetterLetter
         {
             if ( io.in == out )
                 return IO(u, io.out);
             else
-                return IO({ });
+                return IO(IntervalUnion(false, { }));
         }        
     }
     else //IOType::LetterLetter
@@ -61,30 +64,30 @@ IO IO::connectTo(const IO& io)
             if ( io.u.isIn(out) )
                 return IO(in, out);
             else
-                return IO({ });
+                return IO(IntervalUnion(false, { }));
         }
         else if ( io.type == IOType::UnionLetter )
         {
             if ( io.u.isIn(out) )
                 return IO(in, io.out);
             else
-                return IO({ });
+                return IO(IntervalUnion(false, { }));
         }
         else //IOType::LetterLetter
         {
             if ( io.in == out )
                 return IO(in, io.out);
             else
-                return IO({ });
+                return IO(IntervalUnion(false, { }));
         }
     }
 }
 
-Edge::Edge(State* end, char_type in, char_type out, int weight) : end(end), in(in), out(out), weight(weight) { }
+Edge::Edge(State* end, IO io, int weight) : end(end), io(io), weight(weight) { }
 
-void State::connectTo(State* s, char_type i, char_type o, int w)
+void State::connectTo(State* s, IO io, int w)
 {
-    edges.emplace_back(s, i, o, w);
+    edges.emplace_back(s, io, w);
 }
 
 void Transducer::addState(State* newstate)
@@ -95,7 +98,7 @@ void Transducer::addState(State* newstate)
 void Transducer::addEpsilonTransitions()
 {
     for ( auto& state : states )
-        state->connectTo(state, EPS, EPS, 0);
+        state->connectTo(state, IO(EPS, EPS), 0);
 }
     
 Transducer Transducer::composition(Transducer transducer)
@@ -130,7 +133,7 @@ Transducer Transducer::composition(Transducer transducer)
         {
             for ( auto e2 : s2->edges )
             {
-                if ( e1.out == e2.in )
+                if ( e1.io.canBeCompositedTo(e2.io) )
                 {
                     if ( !newstates.count({e1.end, e2.end}))
                     {
@@ -141,7 +144,7 @@ Transducer Transducer::composition(Transducer transducer)
                         queue.push(std::make_pair(e1.end, e2.end));
                     }
                         
-                    s->edges.emplace_back(newstates[std::make_pair(e1.end, e2.end)], e1.in, e2.out, e1.weight + e2.weight);
+                    s->edges.emplace_back(newstates[std::make_pair(e1.end, e2.end)], e1.io.composition(e2.io), e1.weight + e2.weight);
                 }
             }
         }
@@ -162,9 +165,7 @@ void Transducer::visualize(std::ostream& out)
     {
         for ( auto edge : state->edges )
             out << (reinterpret_cast<long long>(state) % 10000) << ' '
-                << edge.in 
-                << ':' 
-                << edge.out 
+                << edge.io.toString()
                 << '/' 
                 << edge.weight 
                 << ' '
@@ -201,7 +202,7 @@ void Transducer::readFromFile(std::istream& in)
         int weight;
 
         in >> start >> inp >> out >> weight >> end;
-        new_states[start]->connectTo(new_states[end], inp, out, weight);
+        new_states[start]->connectTo(new_states[end], IO(inp, out), weight);
     }
 
     initial_state = new_states[0];
@@ -278,7 +279,7 @@ std::vector<Edge> Transducer::minWay()
     std::cout << "Initial state: " << (reinterpret_cast<long long>(initial_state) % 10000) << '\n';
     for ( auto edge : path )
     {
-        std::cout << edge.in << ':' << edge.out << ' ' << edge.weight << ' ' 
+        std::cout << edge.io.toString() << ' ' << edge.weight << ' ' 
         << (reinterpret_cast<long long>(edge.end) % 10000) << '\n';
     }
     std::cout << '\n';
@@ -296,21 +297,21 @@ Transducer Transducer::matchChar(char_type c)
     t.addState(t.initial_state);
     t.addState(t.final_state);
 
-    t.initial_state -> connectTo(t.final_state, c, c, 0);
+    t.initial_state -> connectTo(t.final_state, IO(c, c), 0);
     return t;
 }
 
 Transducer Transducer::klenee(Transducer a)
 {
-    a.final_state -> connectTo(a.initial_state, EPS, EPS, 0);
+    a.final_state -> connectTo(a.initial_state, IO(EPS, EPS), 0);
 
     State* new_initial = new State();
     State* new_final   = new State();
 
-    new_initial -> connectTo(a.initial_state, EPS, EPS, 0);
-    new_initial -> connectTo(new_final, EPS, EPS, 0);
+    new_initial -> connectTo(a.initial_state, IO(EPS, EPS), 0);
+    new_initial -> connectTo(new_final, IO(EPS, EPS), 0);
 
-    a.final_state -> connectTo(new_final, EPS, EPS, 0);
+    a.final_state -> connectTo(new_final, IO(EPS, EPS), 0);
 
     a.addState(new_initial);
     a.addState(new_final);
@@ -337,11 +338,11 @@ Transducer Transducer::orTransducer(Transducer a, Transducer b)
     t.addState(new_initial);
     t.addState(new_final);
 
-    new_initial -> connectTo(a.initial_state, EPS, EPS, 0);
-    new_initial -> connectTo(b.initial_state, EPS, EPS, 0);
+    new_initial -> connectTo(a.initial_state, IO(EPS, EPS), 0);
+    new_initial -> connectTo(b.initial_state, IO(EPS, EPS), 0);
 
-    a.final_state -> connectTo(new_final, EPS, EPS, 0);
-    b.final_state -> connectTo(new_final, EPS, EPS, 0);
+    a.final_state -> connectTo(new_final, IO(EPS, EPS), 0);
+    b.final_state -> connectTo(new_final, IO(EPS, EPS), 0);
 
     t.setInitialState(new_initial);
     t.setFinalState(new_final);
@@ -354,13 +355,13 @@ Transducer Transducer::concat(Transducer a, Transducer b)
     for ( auto state : b.states )
         a.addState(state);
 
-    a.final_state -> connectTo(b.initial_state, EPS, EPS, 0);
+    a.final_state -> connectTo(b.initial_state, IO(EPS, EPS), 0);
     a.setFinalState(b.final_state);
 
     return a;
 }
 
-Transducer Transducer::fromRegexp(std::string regexp)
+Transducer Transducer::fromRegexp(string_type regexp)
 {
     return RegexpParser().parse(regexp);
 }

@@ -1,4 +1,7 @@
 #include "intervalunion.hpp"
+#include <vector>
+#include <algorithm>
+#include <tuple>
 
 IntervalUnion::IntervalUnion(bool is_complement, std::set< std::pair<int, int> > intervals) : is_complement(is_complement), intervals(intervals)
 {
@@ -11,12 +14,9 @@ IntervalUnion IntervalUnion::changeComplement()
     return *this;
 }
 
-bool IntervalUnion::isEmpty() 
-{
-    return intervals.empty();
-}
+bool IntervalUnion::isEmpty() const { return intervals.empty(); }
 
-IntervalUnion IntervalUnion::intersection(const IntervalUnion& iu)
+IntervalUnion IntervalUnion::intersection(const IntervalUnion& iu) const
 {
     if ( !is_complement && !iu.is_complement )
         return internalIntersection(iu);
@@ -28,7 +28,7 @@ IntervalUnion IntervalUnion::intersection(const IntervalUnion& iu)
         return internalDifference(iu);
 }
 
-IntervalUnion IntervalUnion::unite(const IntervalUnion& iu)
+IntervalUnion IntervalUnion::unite(const IntervalUnion& iu) const
 {
     if ( !is_complement && !iu.is_complement )
         return internalUnite(iu);
@@ -40,7 +40,7 @@ IntervalUnion IntervalUnion::unite(const IntervalUnion& iu)
         return iu.internalDifference(*this).changeComplement();
 }
 
-IntervalUnion IntervalUnion::internalIntersection(const IntervalUnion& iu)
+IntervalUnion IntervalUnion::internalIntersection(const IntervalUnion& iu) const
 {
     std::vector< std::pair<int, int> > v;
 
@@ -72,16 +72,16 @@ IntervalUnion IntervalUnion::internalIntersection(const IntervalUnion& iu)
         }
         else
         {
+            --balance;
             if ( balance )
                 ans.insert({lastX, event.first});
-            --balance;
         }
     }
 
     return IntervalUnion(false, ans);
 }
 
-IntervalUnion IntervalUnion::internalUnite(const IntervalUnion& iu)
+IntervalUnion IntervalUnion::internalUnite(const IntervalUnion& iu) const
 {
     std::vector< std::pair<int, int> > v;
 
@@ -129,7 +129,7 @@ IntervalUnion IntervalUnion::internalUnite(const IntervalUnion& iu)
     return IntervalUnion(false, ans);
 }
 
-bool IntervalUnion::isIn(int k)
+bool IntervalUnion::isIn(int x) const
 {
     bool is_there = false;
     for ( auto interval : intervals )
@@ -143,8 +143,8 @@ bool IntervalUnion::isIn(int k)
 
     return is_there ^ is_complement;
 }
-    
-IntervalUnion IntervalUnion::internalDifference(const IntervalUnion& iu)
+
+IntervalUnion IntervalUnion::internalDifference(const IntervalUnion& iu) const
 {
     std::vector< std::tuple<int, int, int> > v;
 
@@ -152,14 +152,14 @@ IntervalUnion IntervalUnion::internalDifference(const IntervalUnion& iu)
 
     for ( auto interval : intervals )
     {
-        v.push_back({interval.first , 0, 0});
-        v.push_back({interval.second, 1, 0});
+        v.push_back(std::make_tuple(interval.first , 0, 0));
+        v.push_back(std::make_tuple(interval.second, 1, 0));
     }
 
     for ( auto interval : iu.intervals )
     {
-        v.push_back({interval.first , 0, 1});
-        v.push_back({interval.second, 1, 1});
+        v.push_back(std::make_tuple(interval.first , 0, 1));
+        v.push_back(std::make_tuple(interval.second, 1, 1));
     }
 
     std::sort(std::begin(v), std::end(v));
@@ -204,4 +204,17 @@ IntervalUnion IntervalUnion::internalDifference(const IntervalUnion& iu)
     }
 
     return IntervalUnion(false, ans);
+}
+    
+std::string IntervalUnion::toString() const
+{
+    std::string s = "";
+    if ( is_complement )
+        s += "Complement\n";
+
+    for ( auto i : intervals )
+        s += "[" + std::to_string(i.first) + ", " + std::to_string(i.second) + "] ";
+
+    s += '\n';
+    return s;
 }
