@@ -17,3 +17,26 @@ EditDistance
 ##Принцип работы
 
 [Ссылка на статью об автоматах](http://arxiv.org/pdf/0904.4686.pdf)
+
+##Классы
+
+1. [Transducer](#Transducer)
+2. [RegexpParser](#RegexpParser)
+3. [IntervalUnion](#IntervalUnion)
+4. [IO](#IO)
+
+###Transducer
+
+1111    
+
+###RegexpParser
+
+2222
+
+###IntervalUnion
+
+3333
+
+###IO
+
+4444
