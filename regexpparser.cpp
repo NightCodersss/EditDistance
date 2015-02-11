@@ -61,7 +61,7 @@ Transducer RegexpParser::parseBlock()
         auto c = regexp[pos];
         consume();
 
-        if ( c == '-' )
+        if ( regexp[pos] == '-' )
         {
             match('-');
             auto c2 = regexp[pos];

@@ -5,7 +5,7 @@
 
 int main()
 {
-    
+/*    
     Transducer X;
 
     std::ifstream in1("x.trans");
@@ -41,6 +41,12 @@ int main()
     U.minWay();
     std::cout << "..............................";
     std::cout << '\n';
+*/
+    auto T = Transducer::fromRegexp({'[', 'a', '-', 'z', ']'});
+    auto A = Transducer::fromRegexp({'A'});
 
-    return 0;
+    auto AT = A.composition(T);
+    AT.visualize(std::cout);
+
+    return 0;    
 }

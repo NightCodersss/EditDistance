@@ -142,7 +142,8 @@ Transducer Transducer::composition(Transducer& transducer)
         {
             for ( auto e2 : s2->edges )
             {
-                assert((e1.io.out == e2.io.in) == e1.io.canBeCompositedTo(e2.io));
+                if ( e1.io.type == IO::IOType::LetterLetter && e2.io.type == IO::IOType::LetterLetter )
+                    assert((e1.io.out == e2.io.in) == e1.io.canBeCompositedTo(e2.io));
 
                 if ( e1.io.canBeCompositedTo(e2.io) )
                 {
@@ -156,7 +157,8 @@ Transducer Transducer::composition(Transducer& transducer)
                     }
 
                     auto comp = e1.io.composition(e2.io);
-                    assert(comp.in == e1.io.in && comp.out == e2.io.out);
+                    if ( e1.io.type == IO::IOType::LetterLetter && e2.io.type == IO::IOType::LetterLetter )
+                        assert(comp.in == e1.io.in && comp.out == e2.io.out);
                         
                     s->edges.emplace_back(newstates[std::make_pair(e1.end, e2.end)], comp, e1.weight + e2.weight);
                 }
