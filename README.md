@@ -16,4 +16,4 @@ EditDistance
 
 ##Принцип работы
 
-[http://arxiv.org/pdf/0904.4686.pdf]
+[Ссылка на статью об автоматах](http://arxiv.org/pdf/0904.4686.pdf)
