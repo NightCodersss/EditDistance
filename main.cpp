@@ -22,15 +22,20 @@ int main()
     T.visualize(std::cout);
 
 //    Transducer A = Transducer::fromRegexp("a(ac|ac)*c");
-    Transducer A = Transducer::fromRegexp({'a', '(', 'a', 'c', '|', 'a', 'c', ')', '*', 'c'});
-//    Transducer A;
-
-//    std::ifstream in3("a.trans");
-
-//    A.readFromFile(in3);
+//    Transducer A = Transducer::fromRegexp({'a', '(', 'a', 'c', '|', 'a', 'c', ')', '*', 'c'});
 //    A.visualize(std::cout);
+    Transducer A;
 
-    Transducer U = X.composition(T).composition(A);
+    std::ifstream in3("a.trans");
+
+    A.readFromFile(in3);
+    A.visualize(std::cout);
+
+//    Transducer U = X.composition(T).composition(A);
+    Transducer XT = X.composition(T);
+    std::cout << "Ne pizdoh\n";
+    XT.visualize(std::cout);
+    auto U = XT.composition(A);
 
     U.visualize(std::cout);
 

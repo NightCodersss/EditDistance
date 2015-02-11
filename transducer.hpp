@@ -58,6 +58,8 @@ class State
 public:
     void connectTo(State* s, IO io, int w);
 
+    unsigned long long id() const;
+
 private:
     std::vector<Edge> edges;
 };
@@ -69,7 +71,7 @@ public:
     static Transducer fromRegexp(string_type regexp);
 
     void addState(State* newstate);
-    Transducer composition(Transducer transducer);
+    Transducer composition(Transducer transducer) const;
 
     void readFromFile(std::istream& in);    
     void visualize(std::ostream& out);

@@ -89,6 +89,8 @@ void State::connectTo(State* s, IO io, int w)
 {
     edges.emplace_back(s, io, w);
 }
+    
+unsigned long long State::id() const { return reinterpret_cast<unsigned long long>(this) % 10000; }    
 
 void Transducer::addState(State* newstate)
 {
@@ -101,7 +103,7 @@ void Transducer::addEpsilonTransitions()
         state->connectTo(state, IO(EPS, EPS), 0);
 }
     
-Transducer Transducer::composition(Transducer transducer)
+Transducer Transducer::composition(Transducer transducer) const
 {
     transducer.addEpsilonTransitions();
         
@@ -129,13 +131,17 @@ Transducer Transducer::composition(Transducer transducer)
 
         State* s = newstates[std::make_pair(s1, s2)];
 
+        auto assert = [](bool x) { if ( !x ) throw "pizdoh"; };
+
         for ( auto e1 : s1->edges )
         {
             for ( auto e2 : s2->edges )
             {
+                assert((e1.io.out == e2.io.in) == e1.io.canBeCompositedTo(e2.io));
+
                 if ( e1.io.canBeCompositedTo(e2.io) )
                 {
-                    if ( !newstates.count({e1.end, e2.end}))
+                    if ( !newstates.count({e1.end, e2.end}) )
                     {
                         State* newstate = new State();
                         product.addState(newstate);
@@ -143,12 +149,25 @@ Transducer Transducer::composition(Transducer transducer)
                         newstates[std::make_pair(e1.end, e2.end)] = newstate;
                         queue.push(std::make_pair(e1.end, e2.end));
                     }
+
+                    auto comp = e1.io.composition(e2.io);
+                    assert(comp.in == e1.io.in && comp.out == e2.io.out);
                         
-                    s->edges.emplace_back(newstates[std::make_pair(e1.end, e2.end)], e1.io.composition(e2.io), e1.weight + e2.weight);
+                    s->edges.emplace_back(newstates[std::make_pair(e1.end, e2.end)], comp, e1.weight + e2.weight);
                 }
             }
         }
     }
+
+    std::cout << "States:\n";
+    for ( auto state : newstates )
+    {
+        std::cout << "Key: (" << state.first.first -> id() << ", " << state.first.second -> id() << ")\n";
+        std::cout << "State: " << state.second -> id() << '\n';
+    }
+
+    std::cout << "Final states:\n";
+    std::cout << "(" << final_state -> id() << ", " << transducer.final_state -> id() << ")\n";
 
     product.initial_state = newstates.at(std::make_pair(initial_state, transducer.initial_state));
     product.final_state = newstates.at(std::make_pair(final_state, transducer.final_state));
