@@ -1,7 +1,7 @@
 CC=clang++
 CFLAGS=-std=c++11 -g -c -Wall -Wextra
 LDFLAGS=
-SOURCES=regexpparser.cpp transducer.cpp main.cpp intervalunion.cpp
+SOURCES=regexpparser.cpp transducer.cpp main.cpp intervalunion.cpp io.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=editdistance
 

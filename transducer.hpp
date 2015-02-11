@@ -9,60 +9,41 @@
 #include <string>
 #include "chartype.hpp"
 #include "intervalunion.hpp"
-
-class State;
-
-struct IO
-{
-    enum class IOType { UnionUnion, UnionLetter, LetterLetter };
-
-    IO(const IntervalUnion& u);
-    IO(const IntervalUnion& u, char_type out);
-    IO(char_type in, char_type out);
-
-    bool canBeCompositedTo(const IO& io) const;
-    IO composition(const IO& io) const;
-
-    std::string toString() const;
-    bool isEmpty() const;
-
-    IOType type;
-
-// if output is IU (interval union) then input == output == u
-// if output is letter, input == u && output == out
-// if input is letter then input == in && output == out
-
-    IntervalUnion u;
-
-    char_type in;
-    char_type out;
-};
-
-struct Edge
-{
-    Edge(State* end, IO io, int weight);
-
-    State* end;
-    IO io;
-    int weight; 
-};
-
-class State
-{
-    friend class Transducer;
-
-public:
-    void connectTo(State* s, IO io, int w);
-
-    unsigned long long id() const;
-
-private:
-    std::vector<Edge> edges;
-};
+#include "io.hpp"
 
 class Transducer
 {
 public:
+
+    class State;
+
+    struct Edge
+    {
+        Edge(State* end, IO io, int weight);
+
+        State* end;
+        IO io;
+        int weight; 
+    };
+
+    class State
+    {
+        friend class Transducer;
+
+    public:
+        void connectTo(State* s, IO io, int w);
+
+        unsigned long long id() const;
+
+    private:
+        std::vector<Edge> edges;
+    };
+
+    struct Path
+    {
+        int cost;
+        std::vector<State*> path;
+    };
 
     Transducer();
 
@@ -90,11 +71,18 @@ public:
     static Transducer klenee(Transducer a);
     static Transducer orTransducer(Transducer a, Transducer b);
 
+    void resetMinPaths();
+    Path getNextMinPath();
+
 private:
 
     State* initial_state;
     State* final_state;
     std::vector<State*> states;
+    
+    std::set<Path> paths;
 };
+
+bool operator<(const Transducer::Path& a, const Transducer::Path& b);
 
 #endif
