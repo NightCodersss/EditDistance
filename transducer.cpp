@@ -119,6 +119,8 @@ Transducer Transducer::composition(Transducer transducer) const
         
     newstates[std::make_pair(initial_state, transducer.initial_state)] = s;
 
+    auto assert = [](bool x) { if ( !x ) throw "assert"; };
+
     while ( !queue.empty() )
     {
         State* s1;
@@ -130,8 +132,6 @@ Transducer Transducer::composition(Transducer transducer) const
         queue.pop();
 
         State* s = newstates[std::make_pair(s1, s2)];
-
-        auto assert = [](bool x) { if ( !x ) throw "pizdoh"; };
 
         for ( auto e1 : s1->edges )
         {
@@ -159,15 +159,8 @@ Transducer Transducer::composition(Transducer transducer) const
         }
     }
 
-    std::cout << "States:\n";
-    for ( auto state : newstates )
-    {
-        std::cout << "Key: (" << state.first.first -> id() << ", " << state.first.second -> id() << ")\n";
-        std::cout << "State: " << state.second -> id() << '\n';
-    }
-
-    std::cout << "Final states:\n";
-    std::cout << "(" << final_state -> id() << ", " << transducer.final_state -> id() << ")\n";
+    if ( newstates.count(std::make_pair(final_state, transducer.final_state)) == 0 )
+        return Transducer();
 
     product.initial_state = newstates.at(std::make_pair(initial_state, transducer.initial_state));
     product.final_state = newstates.at(std::make_pair(final_state, transducer.final_state));
