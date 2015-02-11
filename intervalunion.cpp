@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <tuple>
 
-IntervalUnion::IntervalUnion(bool is_complement, std::set< std::pair<int, int> > intervals) : is_complement(is_complement), intervals(intervals)
+IntervalUnion::IntervalUnion(bool is_complement, std::set< IntervalType > intervals) : is_complement(is_complement), intervals(intervals)
 {
 
 }
@@ -12,6 +12,11 @@ IntervalUnion IntervalUnion::changeComplement()
 {
     is_complement ^= 1;
     return *this;
+}
+
+void IntervalUnion::addInterval(IntervalType interval)
+{
+    intervals.insert(interval);
 }
 
 bool IntervalUnion::isEmpty() const { return intervals.empty(); }
@@ -42,9 +47,9 @@ IntervalUnion IntervalUnion::unite(const IntervalUnion& iu) const
 
 IntervalUnion IntervalUnion::internalIntersection(const IntervalUnion& iu) const
 {
-    std::vector< std::pair<int, int> > v;
+    std::vector< IntervalType > v;
 
-    std::set< std::pair<int, int> > ans;
+    std::set< IntervalType > ans;
 
     for ( auto interval : intervals )
     {
@@ -83,9 +88,9 @@ IntervalUnion IntervalUnion::internalIntersection(const IntervalUnion& iu) const
 
 IntervalUnion IntervalUnion::internalUnite(const IntervalUnion& iu) const
 {
-    std::vector< std::pair<int, int> > v;
+    std::vector< IntervalType > v;
 
-    std::set< std::pair<int, int> > ans;
+    std::set< IntervalType > ans;
 
     for ( auto interval : intervals )
     {
@@ -148,7 +153,7 @@ IntervalUnion IntervalUnion::internalDifference(const IntervalUnion& iu) const
 {
     std::vector< std::tuple<int, int, int> > v;
 
-    std::set< std::pair<int, int> > ans;
+    std::set< IntervalType > ans;
 
     for ( auto interval : intervals )
     {
@@ -164,7 +169,7 @@ IntervalUnion IntervalUnion::internalDifference(const IntervalUnion& iu) const
 
     std::sort(std::begin(v), std::end(v));
 
-    std::pair<int, int> last_start;    
+    IntervalType last_start;    
 
     int first = 0;
     int second = 0;

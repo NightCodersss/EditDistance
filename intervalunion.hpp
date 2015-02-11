@@ -3,14 +3,17 @@
 
 #include <set>
 #include <string>
+#include "chartype.hpp"
+
+using IntervalType = std::pair<char_type, char_type>;
 
 class IntervalUnion
 {
 public:
 
-    IntervalUnion(bool is_complement, std::set< std::pair<int, int> > intervals);
+    IntervalUnion(bool is_complement, std::set<IntervalType> intervals);
 
-    void addInterval(std::pair<int, int> interval);
+    void addInterval(IntervalType interval);
 
     IntervalUnion changeComplement();
 
@@ -29,7 +32,7 @@ private:
     IntervalUnion internalDifference(const IntervalUnion& iu) const;
 
     bool is_complement;
-    std::set< std::pair<int, int> > intervals;
+    std::set<IntervalType> intervals;
 };
 
 #endif

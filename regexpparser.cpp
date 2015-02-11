@@ -46,6 +46,62 @@ Transducer RegexpParser::parseOr()
     return t;
 }
 
+Transducer RegexpParser::parseBlock()
+{
+    match('[');
+
+    bool complement = regexp[pos] == '^';
+    if ( complement )
+        match('^');
+
+    IntervalUnion iu(complement, { });
+
+    while ( regexp[pos] != ']' )
+    {
+        auto c = regexp[pos];
+        consume();
+
+        if ( c == '-' )
+        {
+            match('-');
+            auto c2 = regexp[pos];
+            consume();
+
+            if ( c2 == ']' )
+                throw std::logic_error("Unmatched range");
+
+            if ( c <= c2 )
+                iu.addInterval({c, c2});
+        }
+        else if ( c == '\\' )
+        {
+            // \[ \] \- \^ \n \r \t \0
+
+            auto c2 = regexp[pos];
+            switch ( c2 )
+            {
+                case 'n': iu.addInterval({'\n', '\n'}); break;
+                case 'r': iu.addInterval({'\r', '\r'}); break;
+                case 't': iu.addInterval({'\t', '\t'}); break;
+                case '0': iu.addInterval({'\0', '\0'}); break;
+                case '[': case ']': case '-': case '^': case '\\':
+                {
+                    iu.addInterval({c2, c2});
+                    break;
+                }
+                default:
+                    throw std::logic_error("Unknown symbol \\" + std::to_string(c2)); 
+            }
+        }
+        else
+            iu.addInterval({c, c});
+    }        
+
+    match(']');
+
+    return Transducer::matchBlock(iu); 
+}
+
 Transducer RegexpParser::parseKlenee()
 {
     Transducer t;
@@ -55,6 +111,10 @@ Transducer RegexpParser::parseKlenee()
         match('(');
         t = parseOr();
         match(')');
+    }
+    else if ( regexp[pos] == '[' )
+    {
+        t = parseBlock();
     }
     else
     {

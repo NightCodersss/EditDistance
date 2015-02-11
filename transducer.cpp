@@ -317,6 +317,20 @@ Transducer Transducer::matchChar(char_type c)
     t.initial_state -> connectTo(t.final_state, IO(c, c), 0);
     return t;
 }
+    
+Transducer Transducer::matchBlock(IntervalUnion c)
+{
+    Transducer t;
+
+    t.initial_state = new State();
+    t.final_state   = new State();
+
+    t.addState(t.initial_state);
+    t.addState(t.final_state);
+
+    t.initial_state -> connectTo(t.final_state, IO(c), 0);
+    return t;
+}
 
 Transducer Transducer::klenee(Transducer a)
 {

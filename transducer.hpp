@@ -7,12 +7,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include "chartype.hpp"
 #include "intervalunion.hpp"
-
-using char_type = int;
-const char_type EPS = -1;
-
-using string_type = std::vector<char_type>;
 
 class State;
 
@@ -89,6 +85,7 @@ public:
     void addEpsilonTransitions();
 
     static Transducer matchChar(char_type c);
+    static Transducer matchBlock(IntervalUnion c);
     static Transducer concat(Transducer a, Transducer b);
     static Transducer klenee(Transducer a);
     static Transducer orTransducer(Transducer a, Transducer b);

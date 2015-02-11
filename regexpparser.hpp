@@ -15,6 +15,7 @@ private:
     Transducer parseOr();    
     Transducer parseKlenee();    
     Transducer parseConcat();
+    Transducer parseBlock();
 
     void consume();
     void match(char_type c);
