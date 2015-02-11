@@ -20,9 +20,9 @@ EditDistance
 
 ##Классы
 
-1. [Transducer](###Transducer)
-2. [RegexpParser](###RegexpParser)
-3. [IntervalUnion](###IntervalUnion)
+1. [Transducer](#transducer)
+2. [RegexpParser](#regexpparser)
+3. [IntervalUnion](#intervalunion)
 4. [IO](#IO)
 
 ###Transducer
