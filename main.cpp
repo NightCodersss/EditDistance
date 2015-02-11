@@ -5,7 +5,7 @@
 
 int main()
 {
-/*    
+    
     Transducer X;
 
     std::ifstream in1("x.trans");
@@ -37,19 +37,6 @@ int main()
     U.minWay();
     std::cout << "..............................";
     std::cout << '\n';
-*/
-
-    IntervalUnion iu1(false, { {0, 2}, {4, 6}, {8, 12}, {14, 17} });
-    IntervalUnion iu2(false, { {1, 3}, {5, 9}, {10, 11}, {13, 14}, {16, 18} });
-//    IntervalUnion iu1(false, { {1, 2} });
-//    IntervalUnion iu2(false, { {2, 3} });
-
-    iu1 = iu1.changeComplement();
-
-    std::cout << "Interval 1:\n" << iu1.toString();        
-    std::cout << "Interval 2:\n" << iu2.toString();        
-    std::cout << "Intersection:\n" << iu1.intersection(iu2).toString();        
-    std::cout << "Union:\n" << iu1.unite(iu2).toString();        
 
     return 0;
 }
