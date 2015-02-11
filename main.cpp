@@ -42,11 +42,21 @@ int main()
     std::cout << "..............................";
     std::cout << '\n';
 */
-    auto T = Transducer::fromRegexp({'[', 'a', '-', 'z', ']'});
-    auto A = Transducer::fromRegexp({'A'});
+    std::ifstream in("test.trans");
 
-    auto AT = A.composition(T);
-    AT.visualize(std::cout);
+    Transducer T;
+    T.readFromFile(in);
 
-    return 0;    
+    while ( true )
+    {
+        auto p = T.getNextMinPath();
+        if ( p.cost == -1 )
+            break;
+
+        for ( const auto& state : p.path )
+            std::cout << state -> id() << " ";
+        std::cout << '\n';
+    }
+
+    return 0;
 }

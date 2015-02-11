@@ -7,7 +7,7 @@
 
 bool operator<(const Transducer::Path& a, const Transducer::Path& b)
 {
-    return a.cost < b.cost;
+    return a.cost == b.cost ? a.path < b.path : a.cost < b.cost;
 }
 
 Transducer::Edge::Edge(State* end, IO io, int weight) : end(end), io(io), weight(weight) { }
@@ -22,6 +22,7 @@ unsigned long long Transducer::State::id() const { return reinterpret_cast<unsig
 Transducer::Transducer()
 {
     addState(initial_state = final_state = new State());
+    resetMinPaths();
 }
 
 void Transducer::addState(State* newstate)
@@ -156,6 +157,8 @@ void Transducer::readFromFile(std::istream& in)
 
     for ( auto state : new_states )
         addState(state);
+
+    resetMinPaths();
 }
     
 std::vector<Transducer::Edge> Transducer::minWay()
@@ -324,4 +327,35 @@ Transducer Transducer::concat(Transducer a, Transducer b)
 Transducer Transducer::fromRegexp(string_type regexp)
 {
     return RegexpParser().parse(regexp);
+}
+    
+void Transducer::resetMinPaths()
+{
+    paths.clear();
+    paths.insert(Path{0, {initial_state}});
+}
+
+Transducer::Path Transducer::getNextMinPath()
+{
+    while ( !paths.empty() )
+    {
+        auto p = *std::begin(paths);
+        paths.erase(std::begin(paths));
+
+        auto u = p.path.back();
+
+        for ( auto edge : u -> edges )
+        {
+            Path pv = p;
+            pv.cost += edge.weight;
+            pv.path.push_back(edge.end);
+
+            paths.insert(pv);
+        }
+
+        if ( u == final_state )
+            return p;
+    }
+
+    return Path{-1, {}};
 }
