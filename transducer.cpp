@@ -91,6 +91,11 @@ void State::connectTo(State* s, IO io, int w)
 }
     
 unsigned long long State::id() const { return reinterpret_cast<unsigned long long>(this) % 10000; }    
+    
+Transducer::Transducer()
+{
+    addState(initial_state = final_state = new State());
+}
 
 void Transducer::addState(State* newstate)
 {
@@ -103,7 +108,7 @@ void Transducer::addEpsilonTransitions()
         state->connectTo(state, IO(EPS, EPS), 0);
 }
     
-Transducer Transducer::composition(Transducer transducer) const
+Transducer Transducer::composition(Transducer& transducer)
 {
     transducer.addEpsilonTransitions();
         
@@ -175,7 +180,7 @@ void Transducer::visualize(std::ostream& out)
         << "Final state: " << (reinterpret_cast<long long>(final_state) % 10000) << '\n';
     for ( auto state : states )
     {
-        for ( auto edge : state->edges )
+        for ( const auto& edge : state->edges )
             out << (reinterpret_cast<long long>(state) % 10000) << ' '
                 << edge.io.toString()
                 << '/' 

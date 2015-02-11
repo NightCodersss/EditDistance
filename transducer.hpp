@@ -68,10 +68,15 @@ class Transducer
 {
 public:
 
+    Transducer();
+
+    //No destructor because states are copied between different transducers
+    //Need to add smart pointers later
+
     static Transducer fromRegexp(string_type regexp);
 
     void addState(State* newstate);
-    Transducer composition(Transducer transducer) const;
+    Transducer composition(Transducer& transducer);
 
     void readFromFile(std::istream& in);    
     void visualize(std::ostream& out);

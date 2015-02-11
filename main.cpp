@@ -33,7 +33,6 @@ int main()
 
 //    Transducer U = X.composition(T).composition(A);
     Transducer XT = X.composition(T);
-    std::cout << "Ne pizdoh\n";
     XT.visualize(std::cout);
     auto U = XT.composition(A);
 
