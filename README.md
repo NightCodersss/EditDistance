@@ -16,8 +16,8 @@ EditDistance
 
 ##Принцип работы
 
-[Ссылка на статью об автоматах](http://arxiv.org/pdf/0904.4686.pdf)
-[Ссылка на статью о нахождении следующего минимального пути](http://en.wikipedia.org/wiki/K_shortest_path_routing)
+* [Ссылка на статью об автоматах](http://arxiv.org/pdf/0904.4686.pdf)
+* [Ссылка на статью о нахождении следующего минимального пути](http://en.wikipedia.org/wiki/K_shortest_path_routing)
 
 ##Классы
 

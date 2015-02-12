@@ -5,7 +5,7 @@
 
 int main()
 {
-/*    
+    
     Transducer X;
 
     std::ifstream in1("x.trans");
@@ -41,7 +41,9 @@ int main()
     U.minWay();
     std::cout << "..............................";
     std::cout << '\n';
-*/
+
+
+/*
     std::ifstream in("test.trans");
 
     Transducer T;
@@ -57,6 +59,6 @@ int main()
             std::cout << state -> id() << " ";
         std::cout << '\n';
     }
-
+*/
     return 0;
 }
