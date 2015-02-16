@@ -3,6 +3,8 @@
 #include "transducer.hpp"
 #include "intervalunion.hpp"
 
+#include "icu.hpp"
+
 int main()
 {
     
@@ -60,5 +62,17 @@ int main()
         std::cout << '\n';
     }
 */
+
+//    std::string s = "1";
+//    auto ucs = UnicodeString::fromUTF8(StringPiece(s.c_str()));
+    auto sp = StringPiece("1");
+    for ( int i = 0; i < sp.length(); ++i )
+        std::cerr << "Debug char " << sp.data()[i] << '\n';
+    auto ucs = UnicodeString::fromUTF8(sp); 
+    auto str = convertUnicode(ucs);
+
+    for ( auto i : str )
+        std::cout << "Unicode str symbol " << i << '\n';
+
     return 0;
 }

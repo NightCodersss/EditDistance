@@ -1,7 +1,7 @@
 CC=clang++
 CFLAGS=-std=c++11 -g -c -fPIC -Wall -Wextra
-LDFLAGS=
-SOURCES=regexpparser.cpp transducer.cpp main.cpp intervalunion.cpp io.cpp extern.cpp
+LDFLAGS=`icu-config --ldflags`
+SOURCES=regexpparser.cpp transducer.cpp main.cpp intervalunion.cpp io.cpp extern.cpp icu.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=editdistance
 
