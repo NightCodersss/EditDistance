@@ -1,7 +1,7 @@
 CC=clang++
-CFLAGS=-std=c++11 -g -c -Wall -Wextra
+CFLAGS=-std=c++11 -g -c -fPIC -Wall -Wextra
 LDFLAGS=
-SOURCES=regexpparser.cpp transducer.cpp main.cpp intervalunion.cpp io.cpp
+SOURCES=regexpparser.cpp transducer.cpp main.cpp intervalunion.cpp io.cpp extern.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=editdistance
 
@@ -15,3 +15,6 @@ $(EXECUTABLE) : $(OBJECTS)
 
 clean:
 	rm -rf $(OBJECTS) $(EXECUTABLE)
+
+dll: $(OBJECTS)
+	$(CC) -shared -Wl,-soname,libtrans.so -o libtrans.so $(OBJECTS) extern.o
