@@ -3,6 +3,7 @@
 
 #include <unicode/unistr.h>
 #include <unicode/schriter.h>
+#include <unicode/ustream.h>
 #include "chartype.hpp"
 
 using namespace icu_52;

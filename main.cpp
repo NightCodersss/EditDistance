@@ -63,12 +63,8 @@ int main()
     }
 */
 
-//    std::string s = "1";
-//    auto ucs = UnicodeString::fromUTF8(StringPiece(s.c_str()));
-    auto sp = StringPiece("1");
-    for ( int i = 0; i < sp.length(); ++i )
-        std::cerr << "Debug char " << sp.data()[i] << '\n';
-    auto ucs = UnicodeString::fromUTF8(sp); 
+    std::string s = "1";
+    auto ucs = UnicodeString::fromUTF8(StringPiece(s.c_str()));
     auto str = convertUnicode(ucs);
 
     for ( auto i : str )
