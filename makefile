@@ -17,4 +17,4 @@ clean:
 	rm -rf $(OBJECTS) $(EXECUTABLE)
 
 dll: $(OBJECTS)
-	$(CC) -shared -Wl,-soname,libtrans.so -o libtrans.so $(OBJECTS) extern.o
+	$(CC) -shared -Wl,-soname,libtrans.so -o libtrans.so $(OBJECTS) $(LDFLAGS) 

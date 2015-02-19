@@ -63,7 +63,7 @@ int main()
     }
 */
 
-    std::string s = "1";
+    std::string s = "ε";
     auto ucs = UnicodeString::fromUTF8(StringPiece(s.c_str()));
     auto str = convertUnicode(ucs);
 

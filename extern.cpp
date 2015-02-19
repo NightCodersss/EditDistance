@@ -3,14 +3,22 @@
 #include <cstring>
 #include "chartype.hpp"
 #include "transducer.hpp"
+#include "icu.hpp"
 
 extern "C" 
 {
     Transducer* transducerFromRegexp(const char* regexp)
     {
-        string_type s(strlen(regexp));
-        for ( int i = 0; i < s.size(); ++i )
-            s[i] = regexp[i];
+        auto ucs = UnicodeString::fromUTF8(regexp);
+
+        std::cout << "UCS = " << ucs << '\n';
+
+        string_type s = convertUnicode(ucs);
+
+        for ( auto i : s )
+            std::cout << "Int: " << i << ' ';
+        std::cout << '\n';
+
         return new Transducer(Transducer::fromRegexp(s));
     }
 
