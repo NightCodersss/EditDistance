@@ -5,11 +5,12 @@
 Transducer RegexpParser::parse(string_type _regexp)
 {
     regexp = _regexp;
+    regexp.push_back(-2);
     pos = 0;
 
     Transducer t = parseOr();
 
-    if ( pos != regexp.size() )
+    if ( pos != regexp.size() - 1 )
         throw std::logic_error("Wrong syntax in regular expression");
 
     return t;
@@ -37,7 +38,7 @@ Transducer RegexpParser::parseOr()
 {
     Transducer t = parseConcat();
 
-    while ( regexp[pos] == '|' )
+    while ( pos < regexp.size() && regexp[pos] == '|' )
     {
         match('|');
         t = Transducer::orTransducer(t, parseConcat());
@@ -135,7 +136,7 @@ Transducer RegexpParser::parseConcat()
 {
     Transducer t = parseKlenee();
 
-    while ( regexp[pos] == '(' || isalnum(regexp[pos]) )
+    while ( pos < regexp.size() && (regexp[pos] == '(' || isalnum(regexp[pos])) )
         t = Transducer::concat(t, parseKlenee());
 
     return t;

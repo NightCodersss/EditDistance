@@ -42,7 +42,8 @@ public:
     struct Path
     {
         int cost;
-        std::vector<State*> path;
+        State* initial;
+        std::vector<Edge*> path;
     };
 
     Transducer();
@@ -57,11 +58,11 @@ public:
 
     void readFromFile(std::istream& in);    
     void visualize(std::ostream& out);
+
+    std::vector<Edge> minWay();
     
     void setInitialState(State* s);
     void setFinalState(State* s);
-
-    std::vector<Edge> minWay();
 
     void addEpsilonTransitions();
 

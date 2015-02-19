@@ -332,7 +332,7 @@ Transducer Transducer::fromRegexp(string_type regexp)
 void Transducer::resetMinPaths()
 {
     paths.clear();
-    paths.insert(Path{0, {initial_state}});
+    paths.insert(Path{0, initial_state, {}});
 }
 
 Transducer::Path Transducer::getNextMinPath()
@@ -341,14 +341,14 @@ Transducer::Path Transducer::getNextMinPath()
     {
         auto p = *std::begin(paths);
         paths.erase(std::begin(paths));
+       
+        auto u = p.path.size() == 0 ? p.initial : p.path.back() -> end;
 
-        auto u = p.path.back();
-
-        for ( auto edge : u -> edges )
+        for ( auto& edge : u -> edges )
         {
             Path pv = p;
             pv.cost += edge.weight;
-            pv.path.push_back(edge.end);
+            pv.path.push_back(&edge);
 
             paths.insert(pv);
         }
@@ -357,5 +357,5 @@ Transducer::Path Transducer::getNextMinPath()
             return p;
     }
 
-    return Path{-1, {}};
+    return Path{-1, nullptr, {}};
 }

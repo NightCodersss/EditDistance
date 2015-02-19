@@ -62,13 +62,16 @@ int main()
         std::cout << '\n';
     }
 */
-
+/*
     std::string s = "ε";
     auto ucs = UnicodeString::fromUTF8(StringPiece(s.c_str()));
     auto str = convertUnicode(ucs);
 
     for ( auto i : str )
         std::cout << "Unicode str symbol " << i << '\n';
+*/
+
+    auto t = Transducer::fromRegexp({49, 50, 55});
 
     return 0;
 }

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <Python.h>
 #include "chartype.hpp"
 #include "transducer.hpp"
 #include "icu.hpp"
@@ -31,5 +32,25 @@ extern "C"
     void visualizeTransducer(Transducer* t)
     {
         t -> visualize(std::cout);
+    }
+
+    void resetTransducerMinPaths(Transducer* t)
+    {
+        t -> resetMinPaths();
+    }
+
+    PyObject* getTransducerNextMinPath(Transducer* t)
+    {
+        auto path = t -> getNextMinPath();        
+
+        auto list = PyList_New(0);
+        for ( const auto& edge : path.path )
+        {
+            auto str = edge -> io.toString();
+            auto edge_tuple = Py_BuildValue("(Oi)", PyString_FromString(str.c_str()), edge -> weight);
+            PyList_Append(list, edge_tuple);
+        }
+
+        return list;
     }
 }
