@@ -1,6 +1,7 @@
 #include "io.hpp"
+#include <cassert>
 
-IO::IO(IOPart i, IOPart o)
+IO::IO(IOPart i, IOPart o) : u(false, {})
 {
     if ( i.which() == 0 )
     {
@@ -8,6 +9,8 @@ IO::IO(IOPart i, IOPart o)
         {
             type = IOType::UnionUnion;
             u    = boost::get<IntervalUnion>(i);
+
+            assert(boost::get<IntervalUnion>(i) == boost::get<IntervalUnion>(o));
         }
         else
         {
@@ -28,7 +31,50 @@ IO::IO(const IntervalUnion& u) : type(IOType::UnionUnion), u(u) { }
 IO::IO(const IntervalUnion& u, char_type out) : type(IOType::UnionLetter), u(u), out(out) { }
 IO::IO(char_type in, char_type out) : type(IOType::LetterLetter), u(false, {}), in(in), out(out) { }
     
-std::string IO::toString() const { return "io"; }
+string_type IO::toString() const 
+{
+    switch ( type )
+    {
+    case IOType::UnionUnion:
+    case IOType::UnionLetter:
+    {
+        string_type result;
+        result.emplace_back('[');
+        if ( u.is_complement )
+            result.emplace_back('^');
+
+        for ( const auto& p : u.intervals )
+        {
+            result.emplace_back(p.first);
+            if ( p.first != p.second )
+            {
+                result.emplace_back('-');
+                result.emplace_back(p.second);
+            }
+        }
+
+        result.emplace_back(']');
+        result.emplace_back(' ');
+        
+        if ( type == IOType::UnionUnion ) 
+            result.insert(std::end(result), std::begin(result), std::prev(std::end(result)));
+        else
+            result.emplace_back(out);
+        return result;
+    }
+    case IOType::LetterLetter:
+    {
+        string_type result;
+        result.emplace_back(in);
+        result.emplace_back(' ');
+        result.emplace_back(out);
+        return result;
+    }
+    }
+
+    return string_type();
+}
+
 bool IO::isEmpty() const { return u.isEmpty() && (type == IOType::UnionUnion || type == IOType::UnionLetter); }
 
 bool IO::canBeCompositedTo(const IO& io) const

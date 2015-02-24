@@ -15,3 +15,12 @@ string_type convertUnicode(const icu::UnicodeString& ustr)
 
     return s;
 }
+
+icu::UnicodeString convertFromStringType(const string_type& str)
+{
+    auto ucs = icu::UnicodeString();
+    for ( const auto& c : str )
+        ucs.append(c);
+
+    return ucs;
+}

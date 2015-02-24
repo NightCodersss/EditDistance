@@ -51,8 +51,9 @@ extern "C"
         auto list = PyList_New(0);
         for ( const auto& edge : path.path )
         {
-            auto str = edge -> io.toString();
-            auto edge_tuple = Py_BuildValue("(Oi)", PyString_FromString(str.c_str()), edge -> weight);
+            std::string str_;
+            auto str = convertFromStringType(edge -> io.toString()).toUTF8String(str_);
+            auto edge_tuple = Py_BuildValue("(Oi)", PyString_FromString(str_.c_str()), edge -> weight);
             PyList_Append(list, edge_tuple);
         }
 

@@ -7,7 +7,7 @@
 
 int main()
 {
-    
+/*    
     Transducer X;
 
     std::ifstream in1("x.trans");
@@ -43,7 +43,7 @@ int main()
     std::cout << "..............................";
     std::cout << '\n';
 
-
+*/
 /*
     std::ifstream in("test.trans");
 
@@ -71,6 +71,20 @@ int main()
 */
 
 //    auto t = Transducer::fromRegexp({949, 945});
+
+    Transducer test;
+    std::ifstream in("test.trans");
+    test.readFromFile(in);
+
+    test.visualize(std::cout);
+
+    Transducer test2;
+    std::ifstream in2("test2.trans");
+    test2.readFromFile(in2);
+    
+    test2.visualize(std::cout);
+
+    test.composition(test2).visualize(std::cout);
 
     return 0;
 }

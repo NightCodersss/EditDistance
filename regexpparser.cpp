@@ -101,6 +101,7 @@ IntervalUnion RegexpParser::parseInterval()
     }        
 
     match(']');
+    return iu;
 }
 
 boost::variant<IntervalUnion, char_type> RegexpParser::parseIOPart()

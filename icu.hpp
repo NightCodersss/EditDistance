@@ -9,5 +9,6 @@
 using namespace icu_52;
 
 string_type convertUnicode(const icu::UnicodeString& ustr);
+icu::UnicodeString convertFromStringType(const string_type& str);
 
 #endif

@@ -18,7 +18,7 @@ struct IO
     bool canBeCompositedTo(const IO& io) const;
     IO composition(const IO& io) const;
 
-    std::string toString() const;
+    string_type toString() const;
     bool isEmpty() const;
 
     IOType type;

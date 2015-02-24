@@ -3,7 +3,7 @@ EditDistance
 #TODO:
 
     1. Правила задания модели ошибок
-    2. Работа с unicode
+    2. Работа с unicode   +
     3. Case-insensitive
     4. Фигурные скобки
     5. bash-скрипт

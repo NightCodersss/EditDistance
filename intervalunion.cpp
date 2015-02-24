@@ -223,3 +223,8 @@ std::string IntervalUnion::toString() const
     s += '\n';
     return s;
 }
+    
+bool IntervalUnion::operator==(const IntervalUnion& iu)
+{
+    return is_complement == iu.is_complement && intervals == iu.intervals;
+}

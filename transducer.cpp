@@ -52,8 +52,6 @@ Transducer Transducer::composition(Transducer& transducer)
         
     newstates[std::make_pair(initial_state, transducer.initial_state)] = s;
 
-    auto assert = [](bool x) { if ( !x ) throw "assert"; };
-
     while ( !queue.empty() )
     {
         State* s1;
@@ -112,7 +110,7 @@ void Transducer::visualize(std::ostream& out)
     {
         for ( const auto& edge : state->edges )
             out << (reinterpret_cast<long long>(state) % 10000) << ' '
-                << edge.io.toString()
+                << convertFromStringType(edge.io.toString())
                 << '/' 
                 << edge.weight 
                 << ' '
@@ -236,7 +234,7 @@ std::vector<Transducer::Edge> Transducer::minWay()
     std::cout << "Initial state: " << (reinterpret_cast<long long>(initial_state) % 10000) << '\n';
     for ( auto edge : path )
     {
-        std::cout << edge.io.toString() << ' ' << edge.weight << ' ' 
+        std::cout << convertFromStringType(edge.io.toString()) << ' ' << edge.weight << ' ' 
         << (reinterpret_cast<long long>(edge.end) % 10000) << '\n';
     }
     std::cout << '\n';

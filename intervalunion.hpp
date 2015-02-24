@@ -9,6 +9,7 @@ using IntervalType = std::pair<char_type, char_type>;
 
 class IntervalUnion
 {
+    friend struct IO;
 public:
 
     IntervalUnion(bool is_complement, std::set<IntervalType> intervals);
@@ -24,6 +25,8 @@ public:
     bool isEmpty() const;
 
     std::string toString() const;
+    
+    bool operator==(const IntervalUnion& iu);    
 
 private:
 

@@ -10,9 +10,11 @@ class RegexpParser
 {
 public:
 
+    RegexpParser() = default;
     RegexpParser(string_type regexp);
 
     Transducer parse(string_type regexp);
+    IOPart parseIOPart();
 
 private:
 
@@ -25,7 +27,6 @@ private:
     void match(char_type c);
 
     IntervalUnion parseInterval();
-    boost::variant<IntervalUnion, char_type> parseIOPart();
 
 private:    
 
