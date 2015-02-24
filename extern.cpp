@@ -8,6 +8,11 @@
 
 extern "C" 
 {
+    Transducer* newTransducer()
+    {
+        return new Transducer();
+    }
+
     Transducer* transducerFromRegexp(const char* regexp)
     {
         auto ucs = UnicodeString::fromUTF8(regexp);
@@ -31,6 +36,8 @@ extern "C"
 
     void visualizeTransducer(Transducer* t)
     {
+        std::cout << t << '\n';
+        return;
         t -> visualize(std::cout);
     }
 
@@ -52,5 +59,10 @@ extern "C"
         }
 
         return list;
+    }
+
+    Transducer* transducerComposition(Transducer* t1, Transducer* t2)
+    {
+        return new Transducer(t1 -> composition(*t2));
     }
 }

@@ -1,12 +1,15 @@
 from ctypes import cdll, py_object
 libtrans = cdll.LoadLibrary('./libtrans.so')
 libtrans.getTransducerNextMinPath.restype = py_object
+libtrans.transducerComposition.restype = py_object
 
 class Transducer:
     
     def __init__(self, trans = None):
+        if trans is None:
+            trans = libtrans.newTransducer()
         self.trans = trans
-        self.resetMinPaths()
+#        self.resetMinPaths()
     
     @staticmethod
     def fromRegexp(regex):
@@ -24,3 +27,9 @@ class Transducer:
     def getNextMinPath(self):
         return libtrans.getTransducerNextMinPath(self.trans)
     
+    def composition(self, t):
+        """self and t are no longer valid after composition"""
+        c = libtrans.transducerComposition(self.trans, t.trans)
+        self.trans = None
+        t.trans    = None
+        return Transducer(c)
