@@ -71,7 +71,7 @@ int main()
         std::cout << "Unicode str symbol " << i << '\n';
 */
 
-    auto t = Transducer::fromRegexp({49, 50, 55});
+    auto t = Transducer::fromRegexp({949, 945});
 
     return 0;
 }

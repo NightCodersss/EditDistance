@@ -5,12 +5,11 @@
 Transducer RegexpParser::parse(string_type _regexp)
 {
     regexp = _regexp;
-    regexp.push_back(-2);
     pos = 0;
 
     Transducer t = parseOr();
 
-    if ( pos != regexp.size() - 1 )
+    if ( pos != regexp.size() )
         throw std::logic_error("Wrong syntax in regular expression");
 
     return t;
@@ -85,6 +84,7 @@ Transducer RegexpParser::parseBlock()
                 case 'r': iu.addInterval({'\r', '\r'}); break;
                 case 't': iu.addInterval({'\t', '\t'}); break;
                 case '0': iu.addInterval({'\0', '\0'}); break;
+                case 's': iu.addInterval({' ' ,  ' '}); break;
                 case '[': case ']': case '-': case '^': case '\\':
                 {
                     iu.addInterval({c2, c2});
@@ -136,7 +136,7 @@ Transducer RegexpParser::parseConcat()
 {
     Transducer t = parseKlenee();
 
-    while ( pos < regexp.size() && (regexp[pos] == '(' || isalnum(regexp[pos])) )
+    while ( pos < regexp.size() && regexp[pos] != '|' )
         t = Transducer::concat(t, parseKlenee());
 
     return t;
