@@ -36,8 +36,6 @@ extern "C"
 
     void visualizeTransducer(Transducer* t)
     {
-        std::cout << t << '\n';
-        return;
         t -> visualize(std::cout);
     }
 

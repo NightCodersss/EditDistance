@@ -38,7 +38,6 @@ void Transducer::addEpsilonTransitions()
     
 Transducer Transducer::composition(Transducer& transducer)
 {
-    transducer.addEpsilonTransitions();
         
     Transducer product;
     
@@ -158,6 +157,7 @@ void Transducer::readFromFile(std::istream& in)
     for ( auto state : new_states )
         addState(state);
 
+    addEpsilonTransitions();
     resetMinPaths();
 }
     
@@ -326,7 +326,9 @@ Transducer Transducer::concat(Transducer a, Transducer b)
 
 Transducer Transducer::fromRegexp(string_type regexp)
 {
-    return RegexpParser().parse(regexp);
+    auto t = RegexpParser().parse(regexp);
+    t.addEpsilonTransitions();
+    return t;
 }
     
 void Transducer::resetMinPaths()

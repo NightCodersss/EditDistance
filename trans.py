@@ -1,7 +1,6 @@
 from ctypes import cdll, py_object
 libtrans = cdll.LoadLibrary('./libtrans.so')
 libtrans.getTransducerNextMinPath.restype = py_object
-libtrans.transducerComposition.restype = py_object
 
 class Transducer:
     
@@ -9,7 +8,7 @@ class Transducer:
         if trans is None:
             trans = libtrans.newTransducer()
         self.trans = trans
-#        self.resetMinPaths()
+        self.resetMinPaths()
     
     @staticmethod
     def fromRegexp(regex):

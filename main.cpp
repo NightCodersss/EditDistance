@@ -13,7 +13,6 @@ int main()
     std::ifstream in1("x.trans");
 
     X.readFromFile(in1);
-    X.addEpsilonTransitions();
     X.visualize(std::cout);
 
     Transducer T;
