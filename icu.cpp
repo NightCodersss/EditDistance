@@ -1,7 +1,8 @@
 #include "icu.hpp"
 
-string_type convertUnicode(const icu::UnicodeString& ustr)
+string_type convertUnicode(icu::UnicodeString ustr)
 {
+    ustr.toLower();
     auto it = StringCharacterIterator(ustr);
 
     string_type s;

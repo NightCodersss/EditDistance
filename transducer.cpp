@@ -39,7 +39,6 @@ void Transducer::addEpsilonTransitions()
     
 Transducer Transducer::composition(Transducer& transducer)
 {
-        
     Transducer product;
     
     std::queue< std::pair<State*, State*> > queue;

@@ -16,7 +16,7 @@ IO::IO(IOPart i, IOPart o) : u(false, {})
         {
             type = IOType::UnionLetter;
             u    = boost::get<IntervalUnion>(i);
-            out  = boost::get<char_type>(o);
+            out  = boost::get<char_type>(o);            
         }
     }
     else
