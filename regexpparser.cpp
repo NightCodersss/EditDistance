@@ -2,6 +2,8 @@
 #include <ctype.h>
 #include <stdexcept>
 
+RegexpParser::RegexpParser(string_type regexp) : regexp(regexp), pos(0) { }
+
 Transducer RegexpParser::parse(string_type _regexp)
 {
     regexp = _regexp;
@@ -46,7 +48,7 @@ Transducer RegexpParser::parseOr()
     return t;
 }
 
-Transducer RegexpParser::parseBlock()
+IntervalUnion RegexpParser::parseInterval()
 {
     match('[');
 
@@ -99,7 +101,23 @@ Transducer RegexpParser::parseBlock()
     }        
 
     match(']');
+}
 
+boost::variant<IntervalUnion, char_type> RegexpParser::parseIOPart()
+{
+    if ( regexp[pos] == '[' )
+        return parseInterval();
+    else
+    {
+        auto ch = regexp[pos];
+        consume();
+        return ch;
+    }
+}
+
+Transducer RegexpParser::parseBlock()
+{
+    auto iu = parseInterval();
     return Transducer::matchBlock(iu); 
 }
 

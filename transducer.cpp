@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <sstream>
+#include "icu.hpp"
 
 bool operator<(const Transducer::Path& a, const Transducer::Path& b)
 {
@@ -144,11 +145,18 @@ void Transducer::readFromFile(std::istream& in)
     for ( int i = 0; i < number_of_transitions; ++i )
     {
         int start, end;
-        char_type inp, out; 
+//        char_type inp, out; 
+        UnicodeString inp, out;
         int weight;
 
         in >> start >> inp >> out >> weight >> end;
-        new_states[start]->connectTo(new_states[end], IO(inp, out), weight);
+
+        RegexpParser rp1(convertUnicode(inp));
+        RegexpParser rp2(convertUnicode(out));
+        
+        auto io = IO(rp1.parseIOPart(), rp2.parseIOPart());
+
+        new_states[start]->connectTo(new_states[end], io, weight);
     }
 
     initial_state = new_states[0];

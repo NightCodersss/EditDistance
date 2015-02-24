@@ -1,12 +1,16 @@
 #ifndef _IO_HPP_
 #define _IO_HPP_
 
+#include <boost/variant.hpp>
 #include "intervalunion.hpp"
+
+using IOPart = boost::variant<IntervalUnion, char_type>;
 
 struct IO
 {
     enum class IOType { UnionUnion, UnionLetter, LetterLetter };
 
+    IO(IOPart inp, IOPart out);
     IO(const IntervalUnion& u);
     IO(const IntervalUnion& u, char_type out);
     IO(char_type in, char_type out);

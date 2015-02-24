@@ -1,5 +1,29 @@
 #include "io.hpp"
 
+IO::IO(IOPart i, IOPart o)
+{
+    if ( i.which() == 0 )
+    {
+        if ( o.which() == 0 )
+        {
+            type = IOType::UnionUnion;
+            u    = boost::get<IntervalUnion>(i);
+        }
+        else
+        {
+            type = IOType::UnionLetter;
+            u    = boost::get<IntervalUnion>(i);
+            out  = boost::get<char_type>(o);
+        }
+    }
+    else
+    {
+        type = IOType::LetterLetter;
+        in   = boost::get<char_type>(i);
+        out  = boost::get<char_type>(o);
+    }
+}
+
 IO::IO(const IntervalUnion& u) : type(IOType::UnionUnion), u(u) { }
 IO::IO(const IntervalUnion& u, char_type out) : type(IOType::UnionLetter), u(u), out(out) { }
 IO::IO(char_type in, char_type out) : type(IOType::LetterLetter), u(false, {}), in(in), out(out) { }
