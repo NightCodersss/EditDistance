@@ -18,6 +18,8 @@ public:
 
 private:
 
+    int parseInt();
+
     Transducer parseOr();    
     Transducer parseKlenee();    
     Transducer parseConcat();

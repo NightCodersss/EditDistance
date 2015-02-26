@@ -35,6 +35,26 @@ void RegexpParser::match(char_type c)
         consume();
 }
 
+int RegexpParser::parseInt()
+{
+    if ( pos < regexp.size() && '0' <= regexp[pos] && regexp[pos] <= '9' )
+    {
+        int num = 0;
+
+        while ( pos < regexp.size() && '0' <= regexp[pos] && regexp[pos] <= '9' )
+        {
+            num = 10 * num + regexp[pos] - '0';
+            consume();
+        }
+
+        return num;
+    }
+    else
+    {
+        throw std::logic_error("Integer expected");
+    }
+}
+
 Transducer RegexpParser::parseOr()
 {
     Transducer t = parseConcat();
@@ -146,6 +166,19 @@ Transducer RegexpParser::parseKlenee()
     {
         match('*');
         t = Transducer::klenee(t);
+    }
+    else if ( regexp[pos] == '{' )
+    {
+        match('{');
+        int from = parseInt();
+        match(',');
+        int to = parseInt();
+
+        if ( from > to )
+            throw std::logic_error("Incorrect regexp: {m, n} - m > n");
+
+        t = Transducer::timesTransducer(t, from, to);
+        match('}');
     }
 
     return t;

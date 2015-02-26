@@ -71,9 +71,12 @@ public:
     static Transducer concat(Transducer a, Transducer b);
     static Transducer klenee(Transducer a);
     static Transducer orTransducer(Transducer a, Transducer b);
+    static Transducer timesTransducer(Transducer a, int from, int to);
 
     void resetMinPaths();
     Path getNextMinPath();
+
+    Transducer copy();
 
 private:
 

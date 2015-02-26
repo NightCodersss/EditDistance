@@ -36,7 +36,27 @@ void Transducer::addEpsilonTransitions()
     for ( auto& state : states )
         state->connectTo(state, IO(EPS, EPS), 0);
 }
-    
+
+Transducer Transducer::copy()
+{
+    Transducer a;
+    std::map<State*, State*> newstates;
+
+    for ( auto state : states )
+        a.addState(newstates[state] = new State());
+
+    for ( auto state : states )
+    {
+        for ( auto edge : state -> edges )
+            newstates[state] -> connectTo(newstates[edge.end], edge.io, edge.weight);
+    }
+
+    a.initial_state = newstates[initial_state];
+    a.final_state   = newstates[final_state];
+
+    return a; 
+}
+
 Transducer Transducer::composition(Transducer& transducer)
 {
     Transducer product;
@@ -316,6 +336,27 @@ Transducer Transducer::orTransducer(Transducer a, Transducer b)
     t.setFinalState(new_final);
 
     return t;
+}
+    
+Transducer Transducer::timesTransducer(Transducer a, int from, int to)
+{
+    Transducer b;
+    
+    for ( int i = 0; i < from - 1; ++i )
+        b = Transducer::concat(b, a.copy());
+
+    auto end_state = new State();
+
+    for ( int i = std::max(from - 1, 0); i < to; ++i )
+    {
+        auto aa = a.copy();
+        aa.final_state -> connectTo(end_state, IO(EPS, EPS), 0);
+        b = Transducer::concat(b, aa);
+    }
+
+    b.addState(end_state);
+    b.final_state = end_state;
+    return b;
 }
 
 Transducer Transducer::concat(Transducer a, Transducer b)

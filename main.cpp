@@ -71,7 +71,7 @@ int main()
 */
 
 //    auto t = Transducer::fromRegexp({949, 945});
-
+/*
     Transducer test;
     std::ifstream in("test.trans");
     test.readFromFile(in);
@@ -85,6 +85,10 @@ int main()
     test2.visualize(std::cout);
 
     test.composition(test2).visualize(std::cout);
+*/
+
+    auto t = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("a{2, 2}"))));
+    t.visualize(std::cout);
 
     return 0;
 }
