@@ -52,7 +52,7 @@ public:
     //Need to add smart pointers later
 
     static Transducer fromRegexp(string_type regexp);
-    static Transducer fromAligmentModel(std::istream& in);
+    static Transducer fromAlignmentModel(std::istream& in);
 
     void addState(State* newstate);
     Transducer composition(Transducer& transducer);

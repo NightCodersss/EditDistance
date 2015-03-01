@@ -377,7 +377,7 @@ Transducer Transducer::fromRegexp(string_type regexp)
     return t;
 }
 
-Transducer Transducer::fromAligmentModel(std::istream& in)
+Transducer Transducer::fromAlignmentModel(std::istream& in)
 {
 	Transducer t;
 
@@ -393,11 +393,12 @@ Transducer Transducer::fromAligmentModel(std::istream& in)
 
 		Transducer regexp_trans = RegexpParser().parse(convertUnicode(reg));
 		Transducer string_trans = RegexpParser().parse(convertUnicode(out));
-		for(auto s: regexp_trans.states) //it emptys output of regexp trans
+
+        for( auto s : regexp_trans.states ) //it empties output of regexp trans
 		{
-			for(auto e: s -> edges)
+			for( auto e : s -> edges )
 			{
-				if(e.io.type == IO::IOType::UnionUnion)
+				if ( e.io.type == IO::IOType::UnionUnion )
 				{
 					e.io.type = IO::IOType::UnionLetter;
 					e.io.out = EPS;
@@ -408,17 +409,18 @@ Transducer Transducer::fromAligmentModel(std::istream& in)
 				}
 			}
 		}
-		for(auto s: regexp_trans.states) //it emptys input of string trans
+
+		for( auto s : string_trans.states ) //it empties input of string trans
 		{
-			for(auto e: s -> edges)
+			for( auto e : s -> edges )
 			{
-				if(e.io.type == IO::IOType::LetterLetter)
+				if( e.io.type == IO::IOType::LetterLetter )
 				{
 					e.io.in = EPS;
 				}
 				else
 				{
-					throw std::logic_error("Second argumet of rule must be a string");
+					throw std::logic_error("Second argument of rule must be a string");
 				}
 			}
 		}
@@ -426,7 +428,7 @@ Transducer Transducer::fromAligmentModel(std::istream& in)
 		auto logic_trans = concat(regexp_trans, string_trans);
 
 		//importing states
-		for(auto s: logic_trans.states) 
+		for(auto s : logic_trans.states) 
 			t.addState(s);
 
 		//connecting to t
