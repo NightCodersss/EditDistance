@@ -376,6 +376,65 @@ Transducer Transducer::fromRegexp(string_type regexp)
     t.addEpsilonTransitions();
     return t;
 }
+
+Transducer Transducer::fromAligmentModel(std::istream& in)
+{
+	Transducer t;
+
+	int number_of_rules;
+	in >> number_of_rules;
+
+	for ( int i = 0; i < number_of_rules; ++i )
+	{
+		UnicodeString reg, out;
+		int weight;
+
+		in >> reg >> out >> weight;
+
+		Transducer regexp_trans = RegexpParser().parse(convertUnicode(reg));
+		Transducer string_trans = RegexpParser().parse(convertUnicode(out));
+		for(auto s: regexp_trans.states) //it emptys output of regexp trans
+		{
+			for(auto e: s -> edges)
+			{
+				if(e.io.type == IO::IOType::UnionUnion)
+				{
+					e.io.type = IO::IOType::UnionLetter;
+					e.io.out = EPS;
+				}
+				else
+				{
+					e.io.out = EPS;
+				}
+			}
+		}
+		for(auto s: regexp_trans.states) //it emptys input of string trans
+		{
+			for(auto e: s -> edges)
+			{
+				if(e.io.type == IO::IOType::LetterLetter)
+				{
+					e.io.in = EPS;
+				}
+				else
+				{
+					throw std::logic_error("Second argumet of rule must be a string");
+				}
+			}
+		}
+
+		auto logic_trans = concat(regexp_trans, string_trans);
+
+		//importing states
+		for(auto s: logic_trans.states) 
+			t.addState(s);
+
+		//connecting to t
+		t.initial_state -> connectTo(logic_trans.initial_state, IO(EPS, EPS), weight);
+		logic_trans.final_state -> connectTo(t.final_state, IO(EPS, EPS), 0);
+    }
+	return t;
+}
     
 void Transducer::resetMinPaths()
 {
