@@ -25,6 +25,12 @@ class Transducer:
 
     def getNextMinPath(self):
         return libtrans.getTransducerNextMinPath(self.trans)
+
+    def pathsIterator(self):
+        path = self.getNextMinPath()
+        while path != []:
+            yield path
+            path = self.getNextMinPath()
     
     def composition(self, t):
         """self and t are no longer valid after composition"""
@@ -32,3 +38,12 @@ class Transducer:
         self.trans = None
         t.trans    = None
         return Transducer(c)
+
+#def pathsFromWordToRegexp(word, regexp, error_model_file):
+#    X = Transducer.fromRegexp(word)
+#    A = Transducer.fromRegexp(regexp)    
+#    T = Transducer.readModelFrom(error_model_file)    
+#
+#    composition = X.composition(T).composition(A)
+#    for path in composition.pathsIterator():
+#        yield path

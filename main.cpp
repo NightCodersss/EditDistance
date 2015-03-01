@@ -87,8 +87,20 @@ int main()
     test.composition(test2).visualize(std::cout);
 */
 
-    auto t = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("a{2, 2}"))));
-    t.visualize(std::cout);
+    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("[a-zA-Z]dd*"))));
+    A.visualize(std::cout);
+
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("zddd"))));
+    X.visualize(std::cout);
+
+    auto XA = X.composition(A);
+    XA.visualize(std::cout);
+    XA.resetMinPaths();
+    auto path = XA.getNextMinPath();
+
+    std::cout << path.initial -> id() << ' ';
+    for ( const auto& edge : path.path )
+        std::cout << convertFromStringType(edge -> io.toString()) << ' ';
 
     return 0;
 }
