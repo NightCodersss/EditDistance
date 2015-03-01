@@ -43,11 +43,11 @@ class Transducer:
         t.trans    = None
         return Transducer(c)
 
-#def pathsFromWordToRegexp(word, regexp, error_model_file):
-#    X = Transducer.fromRegexp(word)
-#    A = Transducer.fromRegexp(regexp)    
-#    T = Transducer.readModelFrom(error_model_file)    
-#
-#    composition = X.composition(T).composition(A)
-#    for path in composition.pathsIterator():
-#        yield path
+def pathsFromWordToRegexp(word, regexp, error_model_file):
+    X = Transducer.fromRegexp(word)
+    A = Transducer.fromRegexp(regexp)    
+    T = Transducer.fromAligmentModel(error_model_file)    
+
+    composition = X.composition(T).composition(A)
+    for path in composition.pathsIterator():
+        yield path
