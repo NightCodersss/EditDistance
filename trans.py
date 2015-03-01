@@ -14,6 +14,10 @@ class Transducer:
     def fromRegexp(regex):
         return Transducer(libtrans.transducerFromRegexp(regex))
 
+    @staticmethod
+    def fromAligmentModel(filename):
+        return Transducer(libtrans.transducerFromAligmentModel(filename))
+
     def readFromFile(self, filename):
         libtrans.readTransducerFromFile(self.trans, filename)
 

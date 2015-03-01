@@ -28,6 +28,13 @@ extern "C"
         return new Transducer(Transducer::fromRegexp(s));
     }
 
+    Transducer* transducerFromAligmentModel(const char* filename)
+    {
+        std::ifstream fin(filename);
+        auto t = Transducer::fromAlignmentModel(fin);
+        return new Transducer(t);
+    }
+
     void readTransducerFromFile(Transducer* t, const char* filename)
     {
         std::ifstream fin(filename);
