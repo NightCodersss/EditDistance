@@ -86,7 +86,7 @@ int main()
 
     test.composition(test2).visualize(std::cout);
 */
-
+/*
     auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("[a-zA-Z]dd*"))));
     A.visualize(std::cout);
 
@@ -101,6 +101,9 @@ int main()
     std::cout << path.initial -> id() << ' ';
     for ( const auto& edge : path.path )
         std::cout << convertFromStringType(edge -> io.toString()) << ' ';
+*/
+    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("(bc)"))));
+    A.visualize(std::cout);
 
     return 0;
 }

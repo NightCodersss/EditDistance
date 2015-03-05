@@ -396,7 +396,7 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 
         for( auto s : regexp_trans.states ) //it empties output of regexp trans
 		{
-			for( auto e : s -> edges )
+			for( auto& e : s -> edges )
 			{
 				if ( e.io.type == IO::IOType::UnionUnion )
 				{
@@ -412,7 +412,7 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 
 		for( auto s : string_trans.states ) //it empties input of string trans
 		{
-			for( auto e : s -> edges )
+			for( auto& e : s -> edges )
 			{
 				if( e.io.type == IO::IOType::LetterLetter )
 				{
@@ -444,8 +444,26 @@ void Transducer::resetMinPaths()
     paths.insert(Path{0, initial_state, {}});
 }
 
+void Transducer::removeEpsilonEdges()
+{
+    std::vector<Edge> new_edges;
+    for ( auto& state : states )
+    {
+        new_edges.clear();    
+        for ( auto& edge : state -> edges )
+        {
+            if ( !(edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == state) )
+                new_edges.emplace_back(edge.end, edge.io, edge.weight);
+        }
+        state -> edges = new_edges;
+    }
+}
+
 Transducer::Path Transducer::getNextMinPath()
 {
+    if ( !epsilon_edges_removed )
+        removeEpsilonEdges();
+
     while ( !paths.empty() )
     {
         auto p = *std::begin(paths);

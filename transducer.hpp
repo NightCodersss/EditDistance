@@ -66,6 +66,7 @@ public:
     void setFinalState(State* s);
 
     void addEpsilonTransitions();
+    void removeEpsilonEdges();
 
     static Transducer matchChar(char_type c);
     static Transducer matchBlock(IntervalUnion c);
@@ -86,6 +87,7 @@ private:
     std::vector<State*> states;
     
     std::set<Path> paths;
+    bool epsilon_edges_removed = false;
 };
 
 bool operator<(const Transducer::Path& a, const Transducer::Path& b);

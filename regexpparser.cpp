@@ -158,8 +158,11 @@ Transducer RegexpParser::parseKlenee()
     }
     else
     {
-        t = Transducer::matchChar(regexp[pos]);
-        consume();
+        if ( regexp[pos] != ')' )
+        {
+            t = Transducer::matchChar(regexp[pos]);
+            consume();
+        }
     }
 
     if ( regexp[pos] == '*' )
@@ -188,7 +191,7 @@ Transducer RegexpParser::parseConcat()
 {
     Transducer t = parseKlenee();
 
-    while ( pos < regexp.size() && regexp[pos] != '|' )
+    while ( pos < regexp.size() && regexp[pos] != '|' && regexp[pos] != ')' )
         t = Transducer::concat(t, parseKlenee());
 
     return t;

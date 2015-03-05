@@ -15,7 +15,7 @@ class Transducer:
         return Transducer(libtrans.transducerFromRegexp(regex))
 
     @staticmethod
-    def fromAligmentModel(filename):
+    def fromAlignmentModel(filename):
         return Transducer(libtrans.transducerFromAligmentModel(filename))
 
     def readFromFile(self, filename):
@@ -46,8 +46,10 @@ class Transducer:
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     X = Transducer.fromRegexp(word)
     A = Transducer.fromRegexp(regexp)    
-    T = Transducer.fromAligmentModel(error_model_file)    
+    T = Transducer.fromAlignmentModel(error_model_file)    
 
     composition = X.composition(T).composition(A)
+    composition.visualize()
+
     for path in composition.pathsIterator():
         yield path
