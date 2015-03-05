@@ -49,7 +49,6 @@ def pathsFromWordToRegexp(word, regexp, error_model_file):
     T = Transducer.fromAlignmentModel(error_model_file)    
 
     composition = X.composition(T).composition(A)
-    composition.visualize()
 
     for path in composition.pathsIterator():
         yield path
