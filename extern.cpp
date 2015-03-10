@@ -71,4 +71,9 @@ extern "C"
     {
         return new Transducer(t1 -> composition(*t2));
     }
+
+	bool isTransducerEmpty(Transducer* t)
+	{
+		return t->isEmpty();
+	}
 }
