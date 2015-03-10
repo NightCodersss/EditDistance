@@ -11,6 +11,18 @@ bool operator<(const Transducer::Path& a, const Transducer::Path& b)
     return a.cost == b.cost ? a.path < b.path : a.cost < b.cost;
 }
 
+string_type screen(string_type s)
+{
+	string_type res;
+	for(auto c: s)
+	{
+		if(c == '{' || c == '}' || c == '(' || c == ')' || c == '|' || c == '*' || c == '^' || c == '[' || c == ']' || c == '\\' )
+			res.push_back('\\');
+		res.push_back(c);	
+	}
+	return res;
+}
+    
 Transducer::Edge::Edge(State* end, IO io, int weight) : end(end), io(io), weight(weight) { }
 
 void Transducer::State::connectTo(Transducer::State* s, IO io, int w)
@@ -446,18 +458,6 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 	return t;
 }
 
-string_type Transducer::screen(string_type s)
-{
-	string_type res;
-	for(auto c: s)
-	{
-		if(c == '{')
-			res.push_back('\\');
-		res.push_back(c);	
-	}
-	return res;
-}
-    
 void Transducer::resetMinPaths()
 {
     paths.clear();
