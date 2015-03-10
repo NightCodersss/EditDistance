@@ -26,6 +26,12 @@ Transducer::Transducer()
     resetMinPaths();
 }
 
+// Doesn't accept anything
+bool Transducer::isEmpty()
+{
+    
+}
+
 void Transducer::addState(State* newstate)
 {
     states.push_back(newstate);
