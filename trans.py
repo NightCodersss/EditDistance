@@ -28,12 +28,15 @@ class Transducer:
         return libtrans.isTransducerEmpty(self.trans)
 
     def resetMinPaths(self):
+        """resets path iterator to the beginning"""
         libtrans.resetTransducerMinPaths(self.trans)
 
     def getNextMinPath(self):
+        """It's used by pathsIterator"""
         return libtrans.getTransducerNextMinPath(self.trans)
 
     def pathsIterator(self):
+        """generator of the paths"""
         path = self.getNextMinPath()
         while path != []:
             yield path
@@ -47,6 +50,7 @@ class Transducer:
         return Transducer(c)
 
 def pathsFromWordToRegexp(word, regexp, error_model_file):
+    """iterator for min edit-distance paths"""
     X = Transducer.fromRegexp(word)
     A = Transducer.fromRegexp(regexp)    
     T = Transducer.fromAlignmentModel(error_model_file)    
