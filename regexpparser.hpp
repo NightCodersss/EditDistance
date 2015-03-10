@@ -18,6 +18,8 @@ public:
 
 private:
 
+    void failWith(std::string error);
+
     int parseInt();
 
     Transducer parseOr();    

@@ -1,6 +1,7 @@
 #include "regexpparser.hpp"
 #include <ctype.h>
 #include <stdexcept>
+#include "icu.hpp"
 
 RegexpParser::RegexpParser(string_type regexp) : regexp(regexp), pos(0) { }
 
@@ -20,6 +21,11 @@ Transducer RegexpParser::parse(string_type _regexp)
     return t;
 }
 
+void RegexpParser::failWith(std::string error)
+{
+    throw std::logic_error("Error: " + error + "; at " + std::to_string(pos));
+}
+
 void RegexpParser::consume()
 {
     if ( pos < regexp.size() )
@@ -33,9 +39,9 @@ void RegexpParser::consume()
 void RegexpParser::match(char_type c)
 {
 	if ( pos >= regexp.size() )
-        throw std::logic_error("Wrong syntax in regular expression");
+        failWith("Wrong syntax in regular expression");
     if ( regexp[pos] != c )
-        throw std::logic_error("Wrong syntax in regular expression");
+        failWith("Wrong syntax in regular expression");
     else
         consume();
 }
@@ -56,7 +62,7 @@ int RegexpParser::parseInt()
     }
     else
     {
-        throw std::logic_error("Integer expected");
+        failWith("Integer expected");
     }
 }
 
@@ -95,7 +101,7 @@ IntervalUnion RegexpParser::parseInterval()
             consume();
 
             if ( c2 == ']' )
-                throw std::logic_error("Unmatched range");
+                failWith("Unmatched range");
 
             if ( c <= c2 )
                 iu.addInterval({c, c2});
@@ -118,7 +124,7 @@ IntervalUnion RegexpParser::parseInterval()
                     break;
                 }
                 default:
-                    throw std::logic_error("Unknown symbol \\" + std::to_string(c2)); 
+                    failWith("Unknown symbol \\" + std::to_string(c2)); 
             }
         }
         else
@@ -183,7 +189,7 @@ Transducer RegexpParser::parseKlenee()
         int to = parseInt();
 
         if ( from > to )
-            throw std::logic_error("Incorrect regexp: {m, n} - m > n");
+            failWith("Incorrect regexp: {m, n} - m > n");
 
         t = Transducer::timesTransducer(t, from, to);
         match('}');
