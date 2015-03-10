@@ -29,7 +29,9 @@ Transducer::Transducer()
 // Doesn't accept anything
 bool Transducer::isEmpty()
 {
-    
+	return states.size() == 1 && std::all_of(std::begin(states[0] -> edges), std::end(states[0] -> edges), [&](auto&& edge) {
+			return edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == states[0];
+	});
 }
 
 void Transducer::addState(State* newstate)

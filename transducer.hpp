@@ -79,6 +79,7 @@ public:
     Path getNextMinPath();
 
     Transducer copy();
+	bool isEmpty();
 
 private:
 
