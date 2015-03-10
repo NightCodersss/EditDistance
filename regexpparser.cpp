@@ -9,6 +9,9 @@ Transducer RegexpParser::parse(string_type _regexp)
     regexp = _regexp;
     pos = 0;
 
+	if(regexp.size() == 0)
+		return Transducer();
+
     Transducer t = parseOr();
 
     if ( pos != regexp.size() )
@@ -29,6 +32,8 @@ void RegexpParser::consume()
 
 void RegexpParser::match(char_type c)
 {
+	if ( pos >= regexp.size() )
+        throw std::logic_error("Wrong syntax in regular expression");
     if ( regexp[pos] != c )
         throw std::logic_error("Wrong syntax in regular expression");
     else
