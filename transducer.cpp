@@ -400,7 +400,7 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 		in >> reg >> out >> weight;
 
 		Transducer regexp_trans = RegexpParser().parse(convertUnicode(reg));
-		Transducer string_trans = RegexpParser().parse(convertUnicode(out));
+		Transducer string_trans = RegexpParser().parse(screen(convertUnicode(out)));
 
         for( auto s : regexp_trans.states ) //it empties output of regexp trans
 		{
@@ -444,6 +444,18 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 		logic_trans.final_state -> connectTo(t.final_state, IO(EPS, EPS), 0);
     }
 	return t;
+}
+
+string_type Transducer::screen(string_type s)
+{
+	string_type res;
+	for(auto c: s)
+	{
+		if(c == '{')
+			res.push_back('\\');
+		res.push_back(c);	
+	}
+	return res;
 }
     
 void Transducer::resetMinPaths()

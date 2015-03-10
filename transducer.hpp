@@ -83,6 +83,8 @@ public:
 
 private:
 
+	string_type screen(string_type s);
+
     State* initial_state;
     State* final_state;
     std::vector<State*> states;
