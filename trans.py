@@ -24,6 +24,9 @@ class Transducer:
     def visualize(self):
         libtrans.visualizeTransducer(self.trans)
 
+    def isEmpty(self):
+        return libtrans.isTransducerEmpty(self.trans)
+
     def resetMinPaths(self):
         libtrans.resetTransducerMinPaths(self.trans)
 
