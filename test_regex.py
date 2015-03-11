@@ -61,9 +61,7 @@ def test_random_regex():
         s1 = rstr.xeger("[a-z][a-z]*")
         s2 = rstr.xeger("[a-z][a-z]*")
 
-        for i in pathsFromWordToRegexp(s1, s2, 't.am'):
-            print(i)
-            break
+        path = pathsFromWordToRegexp(s1, s2, 't.am').next()
         minway = sum([w for (s, w) in path]) 
         
         print "Levenstein said ", levenshtein(s1, s2)
