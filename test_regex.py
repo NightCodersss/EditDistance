@@ -57,9 +57,9 @@ def test_random_regex():
 
     print "levenstein"
 
-    for _ in range(1000):
-        s1 = rstr.xeger("[a-z][a-z]*")
-        s2 = rstr.xeger("[a-z][a-z]*")
+    for _ in range(1):
+        s1 = rstr.xeger("[a-b][a-b]*")
+        s2 = rstr.xeger("[a-b][a-b]*")
 
         path = pathsFromWordToRegexp(s1, s2, 't.am').next()
         minway = sum([w for (s, w) in path]) 

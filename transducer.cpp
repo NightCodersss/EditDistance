@@ -485,18 +485,28 @@ void Transducer::removeEpsilonEdges()
 
 Transducer::Path Transducer::getNextMinPath()
 {
+
+	std::cout << "In func\n";
+	std::cout << "Before eps:\n";
+	visualize(std::cout);
     if ( !epsilon_edges_removed )
         removeEpsilonEdges();
-
-    while ( !paths.empty() )
+	std::cout << "After eps:\n";
+	visualize(std::cout);
+    while ( !paths.empty() && paths.size() < MAX_PATHS_SIZE )
     {
+		std::cout << "In loop\n";
+		std::cout << "path.size:" << paths.size() << "\n";
         auto p = *std::begin(paths);
         paths.erase(std::begin(paths));
        
         auto u = p.path.size() == 0 ? p.initial : p.path.back() -> end;
-
+		std::cout << "u:" << u << "\n";
+		std::cout << "final:" << final_state << "\n";
         for ( auto& edge : u -> edges )
         {
+			if(edge.end == u)
+				continue;
             Path pv = p;
             pv.cost += edge.weight;
             pv.path.push_back(&edge);
