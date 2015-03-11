@@ -54,14 +54,34 @@ def test_random_regex():
             print "pizdoh on "+s
 #            return False
             f = False
+    return f
 
+def test_levinstein():
     print "levenstein"
 
     for _ in range(1):
         s1 = rstr.xeger("[a-b][a-b]*")
         s2 = rstr.xeger("[a-b][a-b]*")
 
-        path = pathsFromWordToRegexp(s1, s2, 't.am').next()
+#        path = pathsFromWordToRegexp(s1.encode('utf-8'), s2.encode('utf-8'), 't.am').next()
+        X = Transducer.fromRegexp("bbaaaabbabba")
+        print "X"
+        X.visualize();
+        A = Transducer.fromRegexp("babbbabbabaaab")    
+        print "A"
+        A.visualize();
+        T = Transducer.fromAlignmentModel('t.am')    
+        print "T"
+        T.visualize();
+
+        composition = X.composition(T).composition(A)
+        print "Composition:"
+        composition.visualize();
+        path = composition.pathsIterator().next()
+#        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
+        composition.minWay()
+        print "Path: "
+        print [i for i in path]
         minway = sum([w for (s, w) in path]) 
         
         print "Levenstein said ", levenshtein(s1, s2)
@@ -71,6 +91,6 @@ def test_random_regex():
             print 'pizdoh on ({}, {})'.format(s1, s2)
             return False
 
-    return f
         
-
+def test():
+    test_levinstein()

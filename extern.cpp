@@ -17,13 +17,13 @@ extern "C"
     {
         auto ucs = UnicodeString::fromUTF8(regexp);
 
-//        std::cout << "UCS = " << ucs << '\n';
+        std::cout << "UCS = " << ucs << '\n';
 
         string_type s = convertUnicode(ucs);
 
-//        for ( auto i : s )
-//            std::cout << "Int: " << i << ' ';
-//        std::cout << '\n';
+        for ( auto i : s )
+            std::cout << "Int: " << i << ' ';
+        std::cout << '\n';
 
         return new Transducer(Transducer::fromRegexp(s));
     }
@@ -85,5 +85,10 @@ extern "C"
 	bool isTransducerEmpty(Transducer* t)
 	{
 		return t->isEmpty();
+	}
+
+	void minWay(Transducer* t)
+	{
+		t->minWay();
 	}
 }

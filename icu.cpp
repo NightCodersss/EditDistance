@@ -6,7 +6,6 @@ string_type convertUnicode(icu::UnicodeString ustr)
     auto it = StringCharacterIterator(ustr);
 
     string_type s;
-    
     it.setToStart();
     while ( it.hasNext() )
     {
