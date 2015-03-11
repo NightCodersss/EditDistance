@@ -491,16 +491,14 @@ Transducer::Path Transducer::getNextMinPath()
 	minWay();
     while ( !paths.empty() )
     {
-		while(paths.size() > MAX_PATHS_SIZE)
-		{
-			auto it = paths.end();
-			it--;
-			paths.erase(it);
-		}
+		std::cout << "In loop " << paths.size() << "\n";
+		//Мораль: нужно выпиливать все пути до вершины начиная с катого и большин по весу, иначе очень быстро и сильно будет расти количество путей. Как сейчас, это почти не вычислимо и не нужно.
+		std::cout << "Fixed: " << paths.size() << "\n";
         auto p = *std::begin(paths);
         paths.erase(std::begin(paths));
        
         auto u = p.path.size() == 0 ? p.initial : p.path.back() -> end;
+		std::cout << "Edges: " << u->edges.size() << "\n";
         for ( auto& edge : u -> edges )
         {
 			if(edge.end == u)

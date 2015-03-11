@@ -11,6 +11,6 @@ const int32_t EPS_char = 0x03b5;
 
 using string_type = std::vector<char_type>;
 
-const int MAX_PATHS_SIZE = 1000;
+const int MAX_PATHS_SIZE = 100000000;
 
 #endif
