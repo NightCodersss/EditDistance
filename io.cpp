@@ -65,9 +65,9 @@ string_type IO::toString() const
     case IOType::LetterLetter:
     {
         string_type result;
-        result.emplace_back(in != EPS ? in : "ε");
+        result.emplace_back(in != EPS ? in : EPS_char);
         result.emplace_back(' ');
-        result.emplace_back(out != EPS ? out : "ε");
+        result.emplace_back(out != EPS ? out : EPS_char);
         return result;
     }
     }

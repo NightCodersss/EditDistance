@@ -496,8 +496,6 @@ Transducer::Path Transducer::getNextMinPath()
 
         for ( auto& edge : u -> edges )
         {
-            if ( edge.end == u )
-                continue;
             Path pv = p;
             pv.cost += edge.weight;
             pv.path.push_back(&edge);

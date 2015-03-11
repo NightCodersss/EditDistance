@@ -102,6 +102,7 @@ int main()
     for ( const auto& edge : path.path )
         std::cout << convertFromStringType(edge -> io.toString()) << ' ';
 */
+/*
     auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("lp{0,10}"))));
     A.visualize(std::cout);
 
@@ -111,6 +112,36 @@ int main()
     auto XA = X.composition(A);
     XA.visualize(std::cout);
     std::cout << (XA.isEmpty() ? "empty" : "not empty") << '\n';
-    
+*/
+    std::ifstream in("t.am");
+    auto T = Transducer::fromAlignmentModel(in);
+//    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aaaa"))));
+//    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("azaza"))));
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("a"))));
+    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("z"))));
+
+    std::cout << "Visualizing T:\n";
+    T.visualize(std::cout);
+
+    auto XTA = X.composition(T).composition(A);
+    XTA.visualize(std::cout);
+    std::cout << (XTA.isEmpty() ? "empty" : "not empty") << '\n';
+
+    XTA.minWay();
+
+    auto path = XTA.getNextMinPath();
+   
+    std::string result;
+
+    for ( const auto& edge : path.path )
+    {
+        std::string str_;
+        auto str = convertFromStringType(edge -> io.toString()).toUTF8String(str_);
+        result += "(" + str_ + " " + std::to_string(edge -> weight) + ")";
+    }
+
+    std::cout << "Path cost: " << path.cost << '\n';
+    std::cout << "Path: " << result << '\n';
+
     return 0;
 }

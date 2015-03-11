@@ -11,7 +11,7 @@ string_type convertUnicode(icu::UnicodeString ustr)
     while ( it.hasNext() )
     {
         auto x = it.next32PostInc();
-        s.push_back(x);
+        s.push_back(x != EPS_char ? x : EPS);
     }
 
     return s;
