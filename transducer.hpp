@@ -11,6 +11,8 @@
 #include "intervalunion.hpp"
 #include "io.hpp"
 
+string_type screen(string_type s);
+
 class Transducer
 {
 public:

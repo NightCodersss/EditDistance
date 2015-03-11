@@ -1,6 +1,10 @@
 from ctypes import cdll, py_object
 libtrans = cdll.LoadLibrary('./libtrans.so')
 libtrans.getTransducerNextMinPath.restype = py_object
+libtrans.screen.restype = py_object
+
+def screen(s):
+    return libtrans.screen(s)
 
 class Transducer:
     

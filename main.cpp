@@ -102,8 +102,15 @@ int main()
     for ( const auto& edge : path.path )
         std::cout << convertFromStringType(edge -> io.toString()) << ' ';
 */
-    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("(bc)"))));
+    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("lp{0,10}"))));
     A.visualize(std::cout);
 
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("l"))));
+    X.visualize(std::cout);
+
+    auto XA = X.composition(A);
+    XA.visualize(std::cout);
+    std::cout << (XA.isEmpty() ? "empty" : "not empty") << '\n';
+    
     return 0;
 }

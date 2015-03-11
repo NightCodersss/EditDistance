@@ -17,15 +17,25 @@ extern "C"
     {
         auto ucs = UnicodeString::fromUTF8(regexp);
 
-        std::cout << "UCS = " << ucs << '\n';
+//        std::cout << "UCS = " << ucs << '\n';
 
         string_type s = convertUnicode(ucs);
 
-        for ( auto i : s )
-            std::cout << "Int: " << i << ' ';
-        std::cout << '\n';
+//        for ( auto i : s )
+//            std::cout << "Int: " << i << ' ';
+//        std::cout << '\n';
 
         return new Transducer(Transducer::fromRegexp(s));
+    }
+
+    PyObject* screen(const char* s)
+    {
+        auto ucs = UnicodeString::fromUTF8(s);
+        auto st = convertUnicode(ucs);
+        auto screened = screen(st);
+        std::string str_;
+        auto str = convertFromStringType(screened).toUTF8String(str_);
+        return PyString_FromString(str_.c_str());
     }
 
     Transducer* transducerFromAligmentModel(const char* filename)

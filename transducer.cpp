@@ -367,6 +367,9 @@ Transducer Transducer::timesTransducer(Transducer a, int from, int to)
 
     auto end_state = new State();
 
+    if ( from == 0 )
+        b.initial_state -> connectTo(end_state, IO(EPS, EPS), 0);
+
     for ( int i = std::max(from - 1, 0); i < to; ++i )
     {
         auto aa = a.copy();

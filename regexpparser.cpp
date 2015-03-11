@@ -9,7 +9,7 @@ Transducer RegexpParser::parse(string_type _regexp)
 {
     regexp = _regexp;
     pos = 0;
-
+    
 	if(regexp.size() == 0)
 		return Transducer();
 
@@ -23,6 +23,7 @@ Transducer RegexpParser::parse(string_type _regexp)
 
 void RegexpParser::failWith(std::string error)
 {
+    std::cerr << "Error: failed on regexp " << convertFromStringType(regexp) << '\n';
     throw std::logic_error("Error: " + error + "; at " + std::to_string(pos));
 }
 
@@ -171,6 +172,12 @@ Transducer RegexpParser::parseKlenee()
     {
         if ( regexp[pos] != ')' )
         {
+            if ( regexp[pos] == '\\' )
+            {
+                consume();
+                if ( pos >= regexp.size() )
+                    failWith("Expected symbol after \\");
+            }
             t = Transducer::matchChar(regexp[pos]);
             consume();
         }
