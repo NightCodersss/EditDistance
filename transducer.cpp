@@ -491,7 +491,7 @@ Transducer::Path Transducer::getNextMinPath()
 	minWay();
     while ( !paths.empty() )
     {
-		while(paths.size() >= MAX_PATHS_SIZE)
+		while(paths.size() > MAX_PATHS_SIZE)
 		{
 			auto it = paths.end();
 			it--;
