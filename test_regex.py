@@ -64,28 +64,20 @@ def test_levinstein():
         s2 = rstr.xeger("[a-b][a-b]*")
 
 #        path = pathsFromWordToRegexp(s1.encode('utf-8'), s2.encode('utf-8'), 't.am').next()
-        X = Transducer.fromRegexp("bbaaaabbabba")
-        print "X"
-        X.visualize();
-        A = Transducer.fromRegexp("babbbabbabaaab")    
-        print "A"
-        A.visualize();
+        X = Transducer.fromRegexp("bb")
+        A = Transducer.fromRegexp("bab")    
         T = Transducer.fromAlignmentModel('t.am')    
-        print "T"
-        T.visualize();
 
         composition = X.composition(T).composition(A)
-        print "Composition:"
-        composition.visualize();
-        path = composition.pathsIterator().next()
-#        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
         composition.minWay()
-        print "Path: "
-        print [i for i in path]
-        minway = sum([w for (s, w) in path]) 
-        
-        print "Levenstein said ", levenshtein(s1, s2)
-        print "Transducer said ", minway
+        for path in composition.pathsIterator():        
+#        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
+            print "Path: "
+            print [i for i in path]
+            minway = sum([w for (s, w) in path]) 
+            
+            print "Levenstein said ", levenshtein(s1, s2)
+            print "Transducer said ", minway
 
         if levenshtein(s1, s2) != minway:
             print 'pizdoh on ({}, {})'.format(s1, s2)

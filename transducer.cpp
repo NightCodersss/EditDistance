@@ -464,6 +464,8 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 void Transducer::resetMinPaths()
 {
     paths.clear();
+	paths_count.clear();
+	paths_count[initial_state] = 1;
     paths.insert(Path{0, initial_state, {}});
 }
 
@@ -485,29 +487,24 @@ void Transducer::removeEpsilonEdges()
 
 Transducer::Path Transducer::getNextMinPath()
 {
-	std::cout << "In func\n";
     if ( !epsilon_edges_removed )
         removeEpsilonEdges();
-	minWay();
-    while ( !paths.empty() )
+    while ( !paths.empty() && paths_count[final_state] < MAX_PATHS_SIZE )
     {
-		std::cout << "In loop " << paths.size() << "\n";
-		//Мораль: нужно выпиливать все пути до вершины начиная с катого и большин по весу, иначе очень быстро и сильно будет расти количество путей. Как сейчас, это почти не вычислимо и не нужно.
-		std::cout << "Fixed: " << paths.size() << "\n";
         auto p = *std::begin(paths);
         paths.erase(std::begin(paths));
        
         auto u = p.path.size() == 0 ? p.initial : p.path.back() -> end;
-		std::cout << "Edges: " << u->edges.size() << "\n";
         for ( auto& edge : u -> edges )
         {
-			if(edge.end == u)
+			if(!paths_count[edge.end] < MAX_PATHS_SIZE)
 				continue;
             Path pv = p;
             pv.cost += edge.weight;
             pv.path.push_back(&edge);
 
             paths.insert(pv);
+			++paths_count[edge.end];
         }
 
         if ( u == final_state )

@@ -90,6 +90,7 @@ private:
     std::vector<State*> states;
     
     std::set<Path> paths;
+	std::map<State*, int> paths_count;
     bool epsilon_edges_removed = false;
 };
 
