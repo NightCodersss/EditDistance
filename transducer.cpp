@@ -489,15 +489,18 @@ Transducer::Path Transducer::getNextMinPath()
 {
     if ( !epsilon_edges_removed )
         removeEpsilonEdges();
-    while ( !paths.empty() && paths_count[final_state] < MAX_PATHS_SIZE )
+    
+    printSize(std::cout);
+
+    while ( !paths.empty() && paths_count[final_state] <= MAX_PATHS_SIZE )
     {
         auto p = *std::begin(paths);
         paths.erase(std::begin(paths));
        
-        auto u = p.path.size() == 0 ? p.initial : p.path.back() -> end;
+        auto u = ((p.path.size() == 0) ? initial_state : (p.path.back() -> end));
         for ( auto& edge : u -> edges )
         {
-			if(!paths_count[edge.end] < MAX_PATHS_SIZE)
+			if(paths_count[edge.end] > MAX_PATHS_SIZE)
 				continue;
             Path pv = p;
             pv.cost += edge.weight;
@@ -509,7 +512,17 @@ Transducer::Path Transducer::getNextMinPath()
 
         if ( u == final_state )
             return p;
-    }
-
+    }    
     return Path{-1, nullptr, {}};
+}
+
+void Transducer::printSize(std::ostream& out)
+{
+    out << "Number of vertices: " << states.size() << '\n';
+    
+    int number_of_edges = 0;
+    for ( auto& state : states )
+        number_of_edges += state -> edges.size();
+
+    out << "Number of edges: " << number_of_edges << '\n';
 }

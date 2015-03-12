@@ -117,19 +117,20 @@ int main()
     auto T = Transducer::fromAlignmentModel(in);
 //    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aaaa"))));
 //    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("azaza"))));
-    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("a"))));
-    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("z"))));
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("bb"))));
+    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("bab"))));
 
-    std::cout << "Visualizing T:\n";
-    T.visualize(std::cout);
+//    std::cout << "Visualizing T:\n";
+//    T.visualize(std::cout);
 
     auto XTA = X.composition(T).composition(A);
-    XTA.visualize(std::cout);
-    std::cout << (XTA.isEmpty() ? "empty" : "not empty") << '\n';
+//    XTA.visualize(std::cout);
+//    std::cout << (XTA.isEmpty() ? "empty" : "not empty") << '\n';
 
-    XTA.minWay();
+//    XTA.minWay();
 
-    auto path = XTA.getNextMinPath();
+//    auto path = XTA.getNextMinPath();
+    auto path = X.getNextMinPath();
    
     std::string result;
 

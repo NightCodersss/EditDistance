@@ -32,7 +32,7 @@ def test_random_regex():
         s = screen(rstr.xeger(r).encode('utf-8'))
 #        if Transducer.fromRegexp(r.encode('utf-8')).composition(Transducer.fromRegexp(s)).isEmpty():
         if Transducer.fromRegexp(s).composition(Transducer.fromRegexp(r.encode('utf-8'))).isEmpty():
-            print "pizdoh on "+s
+            print "Failed on "+s
 #            return False
             f = False
 
@@ -51,7 +51,7 @@ def test_random_regex():
 #        print "Python said ", pythonregex
         
         if ourautomat.isEmpty() != pythonregex:
-            print "pizdoh on "+s
+            print "Failed on "+s
 #            return False
             f = False
     return f
@@ -60,27 +60,26 @@ def test_levinstein():
     print "levenstein"
 
     for _ in range(1):
-        s1 = rstr.xeger("[a-b][a-b]*")
-        s2 = rstr.xeger("[a-b][a-b]*")
+        s1 = rstr.xeger("[a-z][a-z]*")
+        s2 = rstr.xeger("[a-z][a-z]*")
 
 #        path = pathsFromWordToRegexp(s1.encode('utf-8'), s2.encode('utf-8'), 't.am').next()
-        X = Transducer.fromRegexp("bb")
-        A = Transducer.fromRegexp("bab")    
-        T = Transducer.fromAlignmentModel('t.am')    
+        X = Transducer.fromRegexp(s1.encode('utf-8'))
+        A = Transducer.fromRegexp(s2.encode('utf-8'))    
+        T = Transducer.fromAlignmentModel('tbig.am')    
 
+        print "comp is started"
         composition = X.composition(T).composition(A)
-        composition.minWay()
-        for path in composition.pathsIterator():        
+        print "compsed"
+#        for path in composition.pathsIterator():        
 #        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
-            print "Path: "
-            print [i for i in path]
-            minway = sum([w for (s, w) in path]) 
-            
-            print "Levenstein said ", levenshtein(s1, s2)
-            print "Transducer said ", minway
+#            minway = sum([w for (s, w) in path]) 
+        composition.minWay()           
+        print "Levenstein said ", levenshtein(s1, s2)
+        print "Transducer said ", minway
 
         if levenshtein(s1, s2) != minway:
-            print 'pizdoh on ({}, {})'.format(s1, s2)
+            print 'Failed on ({}, {})'.format(s1, s2)
             return False
 
         

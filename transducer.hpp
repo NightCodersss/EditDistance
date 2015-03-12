@@ -83,6 +83,8 @@ public:
     Transducer copy();
 	bool isEmpty();
 
+    void printSize(std::ostream& out);
+
 private:
 
     State* initial_state;
