@@ -28,7 +28,7 @@ def test_random_regex():
     r = gen_regex.gen_regex()
 #    print r
     f = True;
-    for _ in range(0):
+    for _ in range(1000):
         s = screen(rstr.xeger(r).encode('utf-8'))
 #        if Transducer.fromRegexp(r.encode('utf-8')).composition(Transducer.fromRegexp(s)).isEmpty():
         if Transducer.fromRegexp(s).composition(Transducer.fromRegexp(r.encode('utf-8'))).isEmpty():
@@ -37,7 +37,7 @@ def test_random_regex():
             f = False
 
 #    print "second part"
-    for _ in range(0):
+    for _ in range(1000):
         s = rstr.xeger("[a-z][a-z]*")
 
         match = re.match(r, s)
@@ -60,8 +60,8 @@ def test_levinstein():
     print "levenstein"
 
     for _ in range(1):
-        s1 = rstr.xeger("[a-z][a-z]*")
-        s2 = rstr.xeger("[a-z][a-z]*")
+        s1 = rstr.xeger("[a-z][a-z]{1,15}")
+        s2 = rstr.xeger("[a-z][a-z]{1,15}")
 
 #        path = pathsFromWordToRegexp(s1.encode('utf-8'), s2.encode('utf-8'), 't.am').next()
         X = Transducer.fromRegexp(s1.encode('utf-8'))
@@ -71,12 +71,12 @@ def test_levinstein():
         print "comp is started"
         composition = X.composition(T).composition(A)
         print "compsed"
-#        for path in composition.pathsIterator():        
+        for path in composition.pathsIterator():        
 #        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
-#            minway = sum([w for (s, w) in path]) 
-        composition.minWay()           
-        print "Levenstein said ", levenshtein(s1, s2)
-        print "Transducer said ", minway
+            minway = sum([w for (s, w) in path]) 
+#        composition.minWay()           
+            print "Levenstein said ", levenshtein(s1, s2)
+            print "Transducer said ", minway
 
         if levenshtein(s1, s2) != minway:
             print 'Failed on ({}, {})'.format(s1, s2)
@@ -85,3 +85,5 @@ def test_levinstein():
         
 def test():
     test_levinstein()
+#    for i in range(100):
+#        test_random_regex()

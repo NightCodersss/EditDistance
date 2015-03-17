@@ -10,11 +10,13 @@
 #include "chartype.hpp"
 #include "intervalunion.hpp"
 #include "io.hpp"
+#include "transduceroptimizer.hpp"
 
 string_type screen(string_type s);
 
 class Transducer
 {
+    friend class TransducerOptimizer;
 public:
 
     class State;
