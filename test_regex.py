@@ -24,64 +24,62 @@ def levenshtein(s1, s2):
     return previous_row[-1]
 
 
-def test_random_regex():
-    r = gen_regex.gen_regex()
-#    print r
+def test_random_regex(n, k):
     f = True;
-    for _ in range(0):
-        s = screen(rstr.xeger(r).encode('utf-8'))
-#        if Transducer.fromRegexp(r.encode('utf-8')).composition(Transducer.fromRegexp(s)).isEmpty():
-        if Transducer.fromRegexp(s).composition(Transducer.fromRegexp(r.encode('utf-8'))).isEmpty():
-            print "Failed on "+s
-#            return False
-            f = False
+    for _ in range(n):
+        r = gen_regex.gen_regex()
+        for _ in range(k):
+            s = screen(rstr.xeger(r).encode('utf-8'))
+            if Transducer.fromRegexp(s).composition(Transducer.fromRegexp(r.encode('utf-8'))).isEmpty():
+                print "Failed on "+s
+                return False
+                f = False
 
-#    print "second part"
-    for _ in range(0):
-        s = rstr.xeger("[a-z][a-z]*")
+        for _ in range(k):
+            s = rstr.xeger("[a-z][a-z]*")
 
-        match = re.match(r, s)
+            match = re.match(r, s)
 
-#        ourautomat = Transducer.fromRegexp(r.encode('utf-8')).composition(Transducer.fromRegexp(s.encode('utf-8'))).isEmpty() 
-        ourautomat = Transducer.fromRegexp(s.encode('utf-8')).composition(Transducer.fromRegexp(r.encode('utf-8')))
-        ourautomat.visualize()
+            ourautomat = Transducer.fromRegexp(s.encode('utf-8')).composition(Transducer.fromRegexp(r.encode('utf-8')))
+            ourautomat.visualize()
 #        print "Our automat said ", ourautomat.isEmpty()
-    
-        pythonregex = (match == None or match.group() != s)
-#        print "Python said ", pythonregex
         
-        if ourautomat.isEmpty() != pythonregex:
-            print "Failed on "+s
-#            return False
-            f = False
+            pythonregex = (match == None or match.group() != s)
+#        print "Python said ", pythonregex
+            
+            if ourautomat.isEmpty() != pythonregex:
+                print "Failed on "+s
+                return False
+                f = False
     return f
 
-def test_levinstein():
+def test_levinstein(n):
     print "levenstein"
 
-    for _ in range(1):
-        s1 = rstr.xeger("[a-z][a-z]*")
-        s2 = rstr.xeger("[a-z][a-z]*")
+    for _ in range(n):
+        s1 = rstr.xeger("[a-b]{1,15}")
+        s2 = rstr.xeger("[a-b]{1,15}")
 
 #        path = pathsFromWordToRegexp(s1.encode('utf-8'), s2.encode('utf-8'), 't.am').next()
         X = Transducer.fromRegexp(s1.encode('utf-8'))
         A = Transducer.fromRegexp(s2.encode('utf-8'))    
-        T = Transducer.fromAlignmentModel('tbig.am')    
+        T = Transducer.fromAlignmentModel('t.am')    
 
         print "comp is started"
         composition = X.composition(T).composition(A)
         print "compsed"
-#        for path in composition.pathsIterator():        
+        path = composition.pathsIterator().next()
 #        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
-#            minway = sum([w for (s, w) in path]) 
-        composition.minWay()           
+        minway = sum([w for (s, w) in path]) 
+#        composition.minWay()           
         print "Levenstein said ", levenshtein(s1, s2)
         print "Transducer said ", minway
 
         if levenshtein(s1, s2) != minway:
             print 'Failed on ({}, {})'.format(s1, s2)
             return False
-
+    return True
         
 def test():
-    test_levinstein()
+    test_random_regex(100, 1000)
+    test_levinstein(100)
