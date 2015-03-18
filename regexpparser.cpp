@@ -40,9 +40,9 @@ void RegexpParser::consume()
 void RegexpParser::match(char_type c)
 {
 	if ( pos >= regexp.size() )
-        failWith("Wrong syntax in regular expression");
+        failWith("Wrong syntax in regular expression: expected something, found end of string");
     if ( regexp[pos] != c )
-        failWith("Wrong syntax in regular expression");
+        failWith("Wrong syntax in regular expression: expected something, found something else");
     else
         consume();
 }

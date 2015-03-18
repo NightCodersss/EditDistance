@@ -6,6 +6,11 @@
 #include <sstream>
 #include "icu.hpp"
 
+ptr<Transducer::State> makeState()
+{
+    return std::make_unique<Transducer::State>();
+}
+
 bool operator<(const Transducer::Path& a, const Transducer::Path& b)
 {
     return a.cost == b.cost ? a.path < b.path : a.cost < b.cost;
@@ -32,17 +37,17 @@ void Transducer::State::connectTo(Transducer::State* s, IO io, int w)
 
 void Transducer::hardDelete()
 {
-	for(auto& state: states)
-		delete state;
 	states.clear();
-	initial_state = final_state = nullptr;
 }
     
 unsigned long long Transducer::State::id() const { return reinterpret_cast<unsigned long long>(this) % 10000; }    
     
 Transducer::Transducer()
 {
-    addState(initial_state = final_state = new State());
+    auto st = makeState();
+    initial_state = st.get();
+    final_state = st.get();
+    addState(std::move(st));
     resetMinPaths();
 }
 
@@ -50,19 +55,19 @@ Transducer::Transducer()
 bool Transducer::isEmpty()
 {
 	return states.size() == 1 && std::all_of(std::begin(states[0] -> edges), std::end(states[0] -> edges), [&](Transducer::Edge& edge) {
-			return edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == states[0];
+			return edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == states[0].get();
 	});
 }
 
-void Transducer::addState(State* newstate)
+void Transducer::addState(ptr<State> newstate)
 {
-    states.push_back(newstate);
+    states.push_back(std::move(newstate));
 }
 
 void Transducer::addEpsilonTransitions()
 {
     for ( auto& state : states )
-        state->connectTo(state, IO(EPS, EPS), 0);
+        state -> connectTo(state.get(), IO(EPS, EPS), 0);
 }
 
 Transducer Transducer::copy()
@@ -70,8 +75,11 @@ Transducer Transducer::copy()
     Transducer a;
     std::map<State*, State*> newstates;
 
-    for ( auto state : states )
+    for ( const auto& state : states )
+    {
+        
         a.addState(newstates[state] = new State());
+    }
 
     for ( auto state : states )
     {
