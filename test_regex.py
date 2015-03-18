@@ -79,7 +79,30 @@ def test_levinstein(n):
             print 'Failed on ({}, {})'.format(s1, s2)
             return False
     return True
+
+def test_of_weight(n):
+    print "weight"
+
+    for _ in range(n):
+        s11 = rstr.xeger("[a-b]{1,15}")
+        s12 = rstr.xeger("[a-b]{1,15}")
+        s21 = rstr.xeger("[a-b]{1,15}")
+        s22 = rstr.xeger("[a-b]{1,15}")
+        
+        path = pathsFromWordToRegexp((s11 + 't' + s12).encode('utf-8'), (s21 + 't' + s22).encode('utf-8'), 'tweight.am').next() 
+        minway = sum([w for (s, w) in path]) 
+        lev = levenshtein(s11,s21) + levenshtein(s12, s22)
+        print 'Lev: {}; Trans: {}'.format(lev, minway)
+        if lev != minway:
+            print 'Failed on ({} t {}, {} t {})'.format(s11, s12, s21, s22)
+            print 'Lev: {}; Trans: {}'.format(lev, minway)
+            return False
+    return True
+
         
 def test():
+    test_of_weight(100)
     test_random_regex(100, 1000)
     test_levinstein(100)
+
+test()
