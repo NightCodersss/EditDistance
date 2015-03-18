@@ -10,7 +10,6 @@
 #include "chartype.hpp"
 #include "intervalunion.hpp"
 #include "io.hpp"
-#include "transduceroptimizer.hpp"
 
 string_type screen(string_type s);
 
@@ -23,6 +22,7 @@ public:
 
     struct Edge
     {
+        friend class TransducerOptimizer;
         Edge(State* end, IO io, int weight);
 
         State* end;
@@ -32,6 +32,7 @@ public:
 
     class State
     {
+        friend class TransducerOptimizer;
         friend class Transducer;
 
     public:

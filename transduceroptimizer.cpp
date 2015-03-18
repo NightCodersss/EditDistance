@@ -1,24 +1,25 @@
 #include "transduceroptimizer.hpp"
 #include "transducer.hpp"
+#include <functional>
 
 TransducerOptimizer::TransducerOptimizer(Transducer& t) : t(t) { }
 
 void TransducerOptimizer::optimize()
 {
-    t -> removeEpsilonEdges();
+    t.removeEpsilonEdges();
     precount();
 
-    dfs(t -> initial_state);
-    removeUnusedStates();    
+    dfs(t.initial_state);
+    removeUnusedStates();
 
-    t -> addEpsilonTransitions();
+    t.addEpsilonTransitions();
 }
 
 void TransducerOptimizer::precount()
 {
-    std::map<State*, bool> used;
+    std::map<Transducer::State*, bool> used;
 
-    auto dfs = [&](auto&& s)
+    std::function<void(Transducer::State*)> dfs = [&](Transducer::State* s)
     {
         if ( used[s] )
             return;
@@ -29,37 +30,32 @@ void TransducerOptimizer::precount()
         {
             ++in_edges_number[edge.end];
             if ( !used[edge.end] )
-                dfs(edge.end);            
+                dfs(edge.end);
         }
     };
 
-    dfs(t -> initial_state);
+    dfs(t.initial_state);
 }
-    
-void TransducerOptimizer::dfs(State* s, std::deque<Edge>& io, State*& end_state)
+
+void TransducerOptimizer::dfs(Transducer::State* s)
 {
+    static std::deque<Transducer::Edge> path_edges;
+
     if ( used[s] )
         return;
-    
+
     used[s] = true;
 
     if ( in_edges_number[s] == 1 && s -> edges.size() == 1 )
     {
         const auto& edge = s -> edges[0];
-            
-        if ( used[edge.end] )
-            new_end_state = edge.end;
 
-        dfs(edge.end, io, end_state);
-        io.push_front(edge);
+        dfs(edge.end);
+        path_edges.push_front(edge);
     }
     else
     {
-        end_state = s;        
-
-        State* new_end_state = nullptr;
-
-        std::vector<Edge> new_edges;
+        std::vector<Transducer::Edge> new_edges;
 
         for ( const auto& edge : s -> edges )
         {
@@ -69,57 +65,42 @@ void TransducerOptimizer::dfs(State* s, std::deque<Edge>& io, State*& end_state)
                 continue;
             }
 
-            dfs(edge.end, io, new_end_state);
-            if ( !io.empty() )
+            dfs(edge.end);
+
+            auto new_edge = edge;
+
+            if ( !path_edges.empty() )
             {
-                io.push_back(edge);
-                auto edges = makeOptimizedEdges(io, new_end_state);
-                new_edges.push_back(edges[0]);
+                path_edges.push_back(edge);
+                auto edges = makeOptimizedEdges(path_edges, s);
+                new_edge = edges[0];
 
-                for ( const auto& state : states )
-                    t -> addState(state);
+                for ( const auto& edge : edges )
+                    t.addState(edge.end);
 
-                io = { };
+                path_edges.clear();
             }
-            else
-                new_edges.push_back(edge);
+
+            new_edges.push_back(new_edge);
         }
 
         s -> edges = new_edges;
     }
 }
-    
-std::vector<Edge> TransducerOptimizer::makeOptimizedEdges(std::deque<Edge>& edges, State* s)
+
+std::vector<Transducer::Edge> TransducerOptimizer::makeOptimizedEdges(const std::deque<Transducer::Edge>& edges, Transducer::State* first_state)
 {
+    auto s = edges.back().end;
+
     std::vector<char_type> in, out;
-    std::vector<Edge> result;
+    std::vector<Transducer::Edge> result;
 
     int weight = 0;
     for ( const auto& edge : edges )
-        weight += edge.weight; 
-
-    int pos = 0;
-    while ( pos < io.size() )
     {
-        const auto& edge = edges[pos];
+        weight += edge.weight;
 
-        if ( edge.io.type == IO::IOType::UnionUnion || edge.io.type == IO::IOType::UnionLetter )
-        {
-            while ( in.size() < out.size() )
-                in.push_back(EPS);
-
-            while ( out.size() < in.size() )
-                out.push_back(EPS);
-
-            for ( int i = 0; i < in.size(); ++i )
-                result.push_back(Edge(nullptr, IO(in[i], out[i]), 0));
-
-            in.clear();
-            out.clear();
-
-            result.push_back(Edge(nullptr, edges[pos].io, 0));            
-        }
-        else
+        if ( edge.io.type == IO::IOType::LetterLetter )
         {
             if ( edge.io.in != EPS )
                 in.push_back(edge.io.in);
@@ -127,44 +108,60 @@ std::vector<Edge> TransducerOptimizer::makeOptimizedEdges(std::deque<Edge>& edge
             if ( edge.io.out != EPS )
                 out.push_back(edge.io.out);
         }
+        else
+        {
+            while ( in.size() < out.size() )
+                in.push_back(EPS);
 
-        ++pos;
+            while ( out.size() < in.size() )
+                out.push_back(EPS);
+
+            for ( size_t i = 0; i < in.size(); ++i )
+                result.push_back(Transducer::Edge(nullptr, IO(in[i], out[i]), 0));
+
+            in.clear();
+            out.clear();
+
+            result.push_back(Transducer::Edge(nullptr, edge.io, 0));
+        }
     }
-            
+
     while ( in.size() < out.size() )
         in.push_back(EPS);
 
     while ( out.size() < in.size() )
         out.push_back(EPS);
 
-    for ( int i = 0; i < in.size(); ++i )
-        result.push_back(Edge(nullptr, IO(in[i], out[i]), 0));
-    
-    if ( weight != 0 )
+    for ( size_t i = 0; i < in.size(); ++i )
+        result.push_back(Transducer::Edge(nullptr, IO(in[i], out[i]), 0));
+
+    if ( weight != 0 || (in_edges_number[s] > 1 && first_state -> edges.size() > 1) )
     {
         if ( result.empty() )
-            result.push_back(Edge(nullptr, IO(EPS, EPS), 0));
+            result.push_back(Transducer::Edge(nullptr, IO(EPS, EPS), 0));
 
         result[0].weight = weight;
     }
-    
+
     for ( int i = 0; i < static_cast<int>(result.size()) - 1; ++i )
     {
-        edge.end = new State();
+        auto& edge = result[i];
+
+        edge.end = new Transducer::State();
         edge.end -> edges = {result[i + 1]};
     }
     result.back().end = s;
 
-    return result;    
+    return result;
 }
 
 void TransducerOptimizer::removeUnusedStates()
 {
-    std::map<State*, bool> used, can_go_to_final;
+    std::map<Transducer::State*, bool> used, can_go_to_final;
 
-    can_go_to_final[t -> final_state] = true;
+    can_go_to_final[t.final_state] = true;
 
-    auto dfs = [&](auto&& s)
+    std::function<void(Transducer::State*)> dfs = [&](Transducer::State* s)
     {
         if ( used[s] )
             return;
@@ -173,30 +170,29 @@ void TransducerOptimizer::removeUnusedStates()
 
         for ( const auto& edge : s -> edges )
         {
-            if ( !used[edge.end] )
-                dfs(edge.end);            
+            dfs(edge.end);
             can_go_to_final[s] = can_go_to_final[s] || can_go_to_final[edge.end];
         }
     };
 
-    dfs(t -> initial_state);
+    dfs(t.initial_state);
 
-    std::vector<State*> new_states;
-    std::set<State*> unused_states;
+    std::vector<Transducer::State*> new_states;
+    std::set<Transducer::State*> unused_states;
 
-    for ( auto state : t -> states )
+    for ( auto state : t.states )
     {
         if ( used[state] && can_go_to_final[state] )
-            new_states -> push_back(state);
+            new_states.push_back(state);
         else
             unused_states.insert(state);
     }
 
-    t -> states = new_states;
+    t.states = new_states;
 
-    for ( auto state : t -> states )
+    for ( auto state : t.states )
     {
-        std::vector<Edge> new_edges;
+        std::vector<Transducer::Edge> new_edges;
         for ( const auto& edge : state -> edges )
         {
             if ( !unused_states.count(edge.end) )

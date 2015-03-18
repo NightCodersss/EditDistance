@@ -4,9 +4,7 @@
 #include <map>
 #include <deque>
 #include "io.hpp"
-
-class State;
-class Transducer;
+#include "transducer.hpp"
 
 class TransducerOptimizer
 {
@@ -16,17 +14,17 @@ public:
     void optimize();
 
 private:
-    
-    void dfs(State* s);
-    void precount(State* s);       
 
-    std::vector<Edge> makeOptimizedEdges(std::vector<Edge>& io, State* s);
+    Transducer::State* dfs(Transducer::State* s);
+    void precount();
+
+    std::vector<Transducer::Edge> makeOptimizedEdges(const std::deque<Transducer::Edge>& io);
     void removeUnusedStates();
 
     Transducer& t;
 
-    std::map<State*, bool> used;
-    std::map<State*, int> in_edges_number;
+    std::map<Transducer::State*, bool> used;
+    std::map<Transducer::State*, int> in_edges_number;
 };
 
 #endif
