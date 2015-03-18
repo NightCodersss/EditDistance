@@ -55,6 +55,8 @@ public:
     Transducer();
     Transducer(Transducer&& t);
 
+    Transducer& operator=(Transducer&& t);
+
     //No destructor because states are copied between different transducers
     //Need to add smart pointers later
 	void hardDelete();
@@ -63,7 +65,7 @@ public:
     static Transducer fromAlignmentModel(std::istream& in);
 
     void addState(ptr<State> newstate);
-    Transducer composition(Transducer& transducer);
+    Transducer composition(Transducer transducer);
 
     void readFromFile(std::istream& in);    
     void visualize(std::ostream& out);

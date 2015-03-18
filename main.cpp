@@ -123,7 +123,7 @@ int main()
 //    std::cout << "Visualizing T:\n";
 //    T.visualize(std::cout);
 
-    auto XTA = X.composition(T).composition(A);
+    auto XTA = X.composition(std::move(T)).composition(std::move(A));
 //    XTA.visualize(std::cout);
 //    std::cout << (XTA.isEmpty() ? "empty" : "not empty") << '\n';
 
