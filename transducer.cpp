@@ -404,10 +404,7 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 {
 	Transducer t;
 
-	int number_of_rules;
-	in >> number_of_rules;
-
-	for ( int i = 0; i < number_of_rules; ++i )
+	while(in)
 	{
 		UnicodeString reg, out;
 		int weight;
