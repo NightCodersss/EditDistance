@@ -31,10 +31,14 @@ def test_random_regex(n, k):
         r = gen_regex.gen_regex()
         for _ in range(k):
             s = screen(rstr.xeger(r).encode('utf-8'))
-            if Transducer.fromRegexp(s).composition(Transducer.fromRegexp(r.encode('utf-8'))).isEmpty():
+            t1 = Transducer.fromRegexp(s)
+            t2 = Transducer.fromRegexp(r.encode('utf-8'))
+            t = t1.composition(t2)
+            if t.isEmpty():
                 print "Failed on "+s
                 return False
                 f = False
+            t.hardDelete()
 
         for _ in range(k):
             s = rstr.xeger("[a-z][a-z]*")
@@ -52,6 +56,7 @@ def test_random_regex(n, k):
                 print "Failed on "+s
                 return False
                 f = False
+            ourautomat.hardDelete()
     return f
 
 def test_levinstein(n):
@@ -105,9 +110,9 @@ def test_of_weight(n):
 
         
 def test():
-    random.seed(3)
+    random.seed(4)
+    test_random_regex(100, 100)
     test_of_weight(100)
-    test_random_regex(100, 1000)
     test_levinstein(100)
 
 test()

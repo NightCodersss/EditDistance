@@ -91,4 +91,9 @@ extern "C"
 	{
 		t->minWay();
 	}
+
+	void hardDelete(Transducer* t)
+	{
+		t -> hardDelete();
+	}
 }

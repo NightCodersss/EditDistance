@@ -52,6 +52,7 @@ public:
 
     //No destructor because states are copied between different transducers
     //Need to add smart pointers later
+	void hardDelete();
 
     static Transducer fromRegexp(string_type regexp);
     static Transducer fromAlignmentModel(std::istream& in);
@@ -84,6 +85,7 @@ public:
 	bool isEmpty();
 
     void printSize(std::ostream& out);
+	
 
 private:
 
