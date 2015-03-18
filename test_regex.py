@@ -1,6 +1,7 @@
 import gen_regex
 import re
 import rstr
+import random
 from trans import Transducer, screen, pathsFromWordToRegexp
     
 def levenshtein(s1, s2):
@@ -64,14 +65,17 @@ def test_levinstein(n):
         X = Transducer.fromRegexp(s1.encode('utf-8'))
         A = Transducer.fromRegexp(s2.encode('utf-8'))    
         T = Transducer.fromAlignmentModel('t.am')    
+        T.visualize()
+        print "OLO"
 
         print "comp is started"
         composition = X.composition(T).composition(A)
         print "compsed"
+        composition.visualize()
+        composition.minWay()           
         path = composition.pathsIterator().next()
 #        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
         minway = sum([w for (s, w) in path]) 
-#        composition.minWay()           
         print "Levenstein said ", levenshtein(s1, s2)
         print "Transducer said ", minway
 
@@ -101,6 +105,7 @@ def test_of_weight(n):
 
         
 def test():
+    random.seed(3)
     test_of_weight(100)
     test_random_regex(100, 1000)
     test_levinstein(100)
