@@ -4,12 +4,16 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <memory>
 #include <map>
 #include <set>
 #include <string>
 #include "chartype.hpp"
 #include "intervalunion.hpp"
 #include "io.hpp"
+
+template <class T>
+using ptr = std::unique_ptr<T>;
 
 string_type screen(string_type s);
 
@@ -52,6 +56,9 @@ public:
     };
 
     Transducer();
+    Transducer(Transducer&& t);
+
+    Transducer& operator=(Transducer&& t);
 
     //No destructor because states are copied between different transducers
     //Need to add smart pointers later
@@ -60,8 +67,8 @@ public:
     static Transducer fromRegexp(string_type regexp);
     static Transducer fromAlignmentModel(std::istream& in);
 
-    void addState(State* newstate);
-    Transducer composition(Transducer& transducer);
+    void addState(ptr<State> newstate);
+    Transducer composition(Transducer transducer);
 
     void readFromFile(std::istream& in);    
     void visualize(std::ostream& out);
@@ -94,7 +101,7 @@ private:
 
     State* initial_state;
     State* final_state;
-    std::vector<State*> states;
+    std::vector< ptr<State> > states;
     
     std::set<Path> paths;
 	std::map<State*, int> paths_count;
@@ -102,5 +109,7 @@ private:
 };
 
 bool operator<(const Transducer::Path& a, const Transducer::Path& b);
+
+ptr<Transducer::State> makeState();
 
 #endif

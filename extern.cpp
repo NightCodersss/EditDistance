@@ -42,7 +42,7 @@ extern "C"
     {
         std::ifstream fin(filename);
         auto t = Transducer::fromAlignmentModel(fin);
-        return new Transducer(t);
+        return new Transducer(std::move(t));
     }
 
     void readTransducerFromFile(Transducer* t, const char* filename)
@@ -79,7 +79,10 @@ extern "C"
 
     Transducer* transducerComposition(Transducer* t1, Transducer* t2)
     {
-        return new Transducer(t1 -> composition(*t2));
+        auto t = new Transducer(t1 -> composition(std::move(*t2)));
+        delete t1;
+        delete t2;
+        return t;
     }
 
 	bool isTransducerEmpty(Transducer* t)

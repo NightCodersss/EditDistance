@@ -24,6 +24,10 @@ Transducer RegexpParser::parse(string_type _regexp)
 void RegexpParser::failWith(std::string error)
 {
     std::cerr << "Error: failed on regexp " << convertFromStringType(regexp) << '\n';
+    std::cerr << "Unicode string codes: ";
+    for ( const auto& ch : regexp )
+        std::cerr << std::to_string(ch) << ' ';
+    std::cerr << '\n';
     throw std::logic_error("Error: " + error + "; at " + std::to_string(pos));
 }
 
@@ -40,9 +44,9 @@ void RegexpParser::consume()
 void RegexpParser::match(char_type c)
 {
 	if ( pos >= regexp.size() )
-        failWith("Wrong syntax in regular expression");
+        failWith("Wrong syntax in regular expression: expected something, found end of string");
     if ( regexp[pos] != c )
-        failWith("Wrong syntax in regular expression");
+        failWith("Wrong syntax in regular expression: expected something, found something else");
     else
         consume();
 }
@@ -74,7 +78,7 @@ Transducer RegexpParser::parseOr()
     while ( pos < regexp.size() && regexp[pos] == '|' )
     {
         match('|');
-        t = Transducer::orTransducer(t, parseConcat());
+        t = Transducer::orTransducer(std::move(t), parseConcat());
     }
 
     return t;
@@ -186,7 +190,7 @@ Transducer RegexpParser::parseKlenee()
     if ( regexp[pos] == '*' )
     {
         match('*');
-        t = Transducer::klenee(t);
+        t = Transducer::klenee(std::move(t));
     }
     else if ( regexp[pos] == '{' )
     {
@@ -198,7 +202,7 @@ Transducer RegexpParser::parseKlenee()
         if ( from > to )
             failWith("Incorrect regexp: {m, n} - m > n");
 
-        t = Transducer::timesTransducer(t, from, to);
+        t = Transducer::timesTransducer(std::move(t), from, to);
         match('}');
     }
 
@@ -210,7 +214,7 @@ Transducer RegexpParser::parseConcat()
     Transducer t = parseKlenee();
 
     while ( pos < regexp.size() && regexp[pos] != '|' && regexp[pos] != ')' )
-        t = Transducer::concat(t, parseKlenee());
+        t = Transducer::concat(std::move(t), parseKlenee());
 
     return t;
 }

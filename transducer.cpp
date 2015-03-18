@@ -6,6 +6,11 @@
 #include <sstream>
 #include "icu.hpp"
 
+ptr<Transducer::State> makeState()
+{
+    return std::make_unique<Transducer::State>();
+}
+
 bool operator<(const Transducer::Path& a, const Transducer::Path& b)
 {
     return a.cost == b.cost ? a.path < b.path : a.cost < b.cost;
@@ -32,37 +37,54 @@ void Transducer::State::connectTo(Transducer::State* s, IO io, int w)
 
 void Transducer::hardDelete()
 {
-	for(auto& state: states)
-		delete state;
 	states.clear();
-	initial_state = final_state = nullptr;
 }
     
 unsigned long long Transducer::State::id() const { return reinterpret_cast<unsigned long long>(this) % 10000; }    
     
 Transducer::Transducer()
 {
-    addState(initial_state = final_state = new State());
+    auto st = makeState();
+    initial_state = st.get();
+    final_state = st.get();
+    addState(std::move(st));
     resetMinPaths();
+}
+    
+Transducer::Transducer(Transducer&& t) : states(std::move(t.states))
+{
+    initial_state = t.initial_state;
+    final_state   = t.final_state;
+
+    resetMinPaths();    
+}
+
+Transducer& Transducer::operator=(Transducer&& t)
+{
+    states        = std::move(t.states);
+    initial_state = t.initial_state;
+    final_state   = t.final_state;
+
+    return *this;
 }
 
 // Doesn't accept anything
 bool Transducer::isEmpty()
 {
 	return states.size() == 1 && std::all_of(std::begin(states[0] -> edges), std::end(states[0] -> edges), [&](Transducer::Edge& edge) {
-			return edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == states[0];
+			return edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == states[0].get();
 	});
 }
 
-void Transducer::addState(State* newstate)
+void Transducer::addState(ptr<State> newstate)
 {
-    states.push_back(newstate);
+    states.push_back(std::move(newstate));
 }
 
 void Transducer::addEpsilonTransitions()
 {
     for ( auto& state : states )
-        state->connectTo(state, IO(EPS, EPS), 0);
+        state -> connectTo(state.get(), IO(EPS, EPS), 0);
 }
 
 Transducer Transducer::copy()
@@ -70,13 +92,17 @@ Transducer Transducer::copy()
     Transducer a;
     std::map<State*, State*> newstates;
 
-    for ( auto state : states )
-        a.addState(newstates[state] = new State());
-
-    for ( auto state : states )
+    for ( const auto& state : states )
     {
-        for ( auto edge : state -> edges )
-            newstates[state] -> connectTo(newstates[edge.end], edge.io, edge.weight);
+        auto new_state = makeState();
+        newstates[state.get()] = new_state.get();        
+        a.addState(std::move(new_state));
+    }
+
+    for ( const auto& state : states )
+    {
+        for ( const auto& edge : state -> edges )
+            newstates[state.get()] -> connectTo(newstates[edge.end], edge.io, edge.weight);
     }
 
     a.initial_state = newstates[initial_state];
@@ -85,7 +111,7 @@ Transducer Transducer::copy()
     return a; 
 }
 
-Transducer Transducer::composition(Transducer& transducer)
+Transducer Transducer::composition(Transducer transducer)
 {
     Transducer product;
     
@@ -94,10 +120,10 @@ Transducer Transducer::composition(Transducer& transducer)
 
     std::map< std::pair<State*, State*>, State* > newstates;
         
-    State *s = new State();
-    product.addState(s);
+    auto s = makeState();
         
-    newstates[std::make_pair(initial_state, transducer.initial_state)] = s;
+    newstates[std::make_pair(initial_state, transducer.initial_state)] = s.get();
+    product.addState(std::move(s));
 
     while ( !queue.empty() )
     {
@@ -122,11 +148,12 @@ Transducer Transducer::composition(Transducer& transducer)
                 {
                     if ( !newstates.count({e1.end, e2.end}) )
                     {
-                        State* newstate = new State();
-                        product.addState(newstate);
+                        auto newstate = makeState();
                         
-                        newstates[std::make_pair(e1.end, e2.end)] = newstate;
+                        newstates[std::make_pair(e1.end, e2.end)] = newstate.get();
                         queue.push(std::make_pair(e1.end, e2.end));
+                        
+                        product.addState(std::move(newstate));
                     }
 
                     auto comp = e1.io.composition(e2.io);
@@ -153,10 +180,10 @@ void Transducer::visualize(std::ostream& out)
     out << "Transducer:\n";
     out << "Initial state: " << (reinterpret_cast<long long>(initial_state) % 10000) << '\n' 
         << "Final state: " << (reinterpret_cast<long long>(final_state) % 10000) << '\n';
-    for ( auto state : states )
+    for ( const auto& state : states )
     {
         for ( const auto& edge : state->edges )
-            out << (reinterpret_cast<long long>(state) % 10000) << ' '
+            out << (reinterpret_cast<long long>(state.get()) % 10000) << ' '
                 << convertFromStringType(edge.io.toString())
                 << '/' 
                 << edge.weight 
@@ -183,14 +210,14 @@ void Transducer::readFromFile(std::istream& in)
     int number_of_states, number_of_transitions, _final_state;
     in >> number_of_states >> number_of_transitions >> _final_state;
 
-    std::vector<State*> new_states(number_of_states);
-    for ( auto& state : new_states )
-        state = new State();
+    states.resize(number_of_states);
+
+    for ( auto& state : states )
+        state = makeState();
 
     for ( int i = 0; i < number_of_transitions; ++i )
     {
         int start, end;
-//        char_type inp, out; 
         UnicodeString inp, out;
         int weight;
 
@@ -201,14 +228,11 @@ void Transducer::readFromFile(std::istream& in)
         
         auto io = IO(rp1.parseIOPart(), rp2.parseIOPart());
 
-        new_states[start]->connectTo(new_states[end], io, weight);
+        states[start]->connectTo(states[end].get(), io, weight);
     }
 
-    initial_state = new_states[0];
-    final_state   = new_states[_final_state];
-
-    for ( auto state : new_states )
-        addState(state);
+    initial_state = states[0].get();
+    final_state   = states[_final_state].get();
 
     addEpsilonTransitions();
     resetMinPaths();
@@ -222,15 +246,15 @@ std::vector<Transducer::Edge> Transducer::minWay()
     std::map< State*, int > d;
     std::map< State*, State* > p;
     
-    for ( auto state : states )
-        d[state] = INF;
+    for ( const auto& state : states )
+        d[state.get()] = INF;
 
     d[initial_state] = 0;
     
-    for ( auto state : states )
+    for ( const auto& state : states )
     {
-        q.insert({d[state], state});
-        p[state] = nullptr;
+        q.insert({d[state.get()], state.get()});
+        p[state.get()] = nullptr;
     }
 
     while ( !q.empty() )
@@ -251,11 +275,11 @@ std::vector<Transducer::Edge> Transducer::minWay()
         }
     }
 
-    for ( auto state : states )
+    for ( const auto& state : states )
     {
-        std::cout << "State:    " << (reinterpret_cast<long long>(state) % 10000) << '\n'
-                  << "Distance: " << d[state] << '\n'
-                  << "Parent:   " << (reinterpret_cast<long long>(p[state]) % 10000) << '\n';
+        std::cout << "State:    " << (reinterpret_cast<long long>(state.get()) % 10000) << '\n'
+                  << "Distance: " << d[state.get()] << '\n'
+                  << "Parent:   " << (reinterpret_cast<long long>(p[state.get()]) % 10000) << '\n';
         std::cout << '\n';
     }
 
@@ -293,11 +317,14 @@ Transducer Transducer::matchChar(char_type c)
 {
     Transducer t;
 
-    t.initial_state = new State();
-    t.final_state   = new State();
+    auto init_state  = makeState();
+    auto final_state = makeState();
+    
+    t.initial_state = init_state.get();
+    t.final_state   = final_state.get();
 
-    t.addState(t.initial_state);
-    t.addState(t.final_state);
+    t.addState(std::move(init_state));
+    t.addState(std::move(final_state));
 
     t.initial_state -> connectTo(t.final_state, IO(c, c), 0);
     return t;
@@ -307,11 +334,14 @@ Transducer Transducer::matchBlock(IntervalUnion c)
 {
     Transducer t;
 
-    t.initial_state = new State();
-    t.final_state   = new State();
+    auto init_state  = makeState();
+    auto final_state = makeState();
 
-    t.addState(t.initial_state);
-    t.addState(t.final_state);
+    t.initial_state = init_state.get();
+    t.final_state   = final_state.get();
+
+    t.addState(std::move(init_state));
+    t.addState(std::move(final_state));
 
     t.initial_state -> connectTo(t.final_state, IO(c), 0);
     return t;
@@ -321,47 +351,47 @@ Transducer Transducer::klenee(Transducer a)
 {
     a.final_state -> connectTo(a.initial_state, IO(EPS, EPS), 0);
 
-    State* new_initial = new State();
-    State* new_final   = new State();
+    auto new_initial = makeState();
+    auto new_final   = makeState();
 
     new_initial -> connectTo(a.initial_state, IO(EPS, EPS), 0);
-    new_initial -> connectTo(new_final, IO(EPS, EPS), 0);
+    new_initial -> connectTo(new_final.get(), IO(EPS, EPS), 0);
 
-    a.final_state -> connectTo(new_final, IO(EPS, EPS), 0);
+    a.final_state -> connectTo(new_final.get(), IO(EPS, EPS), 0);
 
-    a.addState(new_initial);
-    a.addState(new_final);
+    a.setInitialState(new_initial.get());
+    a.setFinalState(new_final.get());
 
-    a.setInitialState(new_initial);
-    a.setFinalState(new_final);
+    a.addState(std::move(new_initial));
+    a.addState(std::move(new_final));
 
     return a;
 }
 
 Transducer Transducer::orTransducer(Transducer a, Transducer b)
 {
-    State* new_initial = new State();
-    State* new_final   = new State();
-
+    auto new_initial = makeState();
+    auto new_final   = makeState();
+    
     Transducer t;
 
-    for ( auto state : a.states )
-        t.addState(state);
+    for ( auto& state : a.states )
+        t.addState(std::move(state));
 
-    for ( auto state : b.states )
-        t.addState(state);
-
-    t.addState(new_initial);
-    t.addState(new_final);
+    for ( auto& state : b.states )
+        t.addState(std::move(state));
 
     new_initial -> connectTo(a.initial_state, IO(EPS, EPS), 0);
     new_initial -> connectTo(b.initial_state, IO(EPS, EPS), 0);
 
-    a.final_state -> connectTo(new_final, IO(EPS, EPS), 0);
-    b.final_state -> connectTo(new_final, IO(EPS, EPS), 0);
+    a.final_state -> connectTo(new_final.get(), IO(EPS, EPS), 0);
+    b.final_state -> connectTo(new_final.get(), IO(EPS, EPS), 0);
 
-    t.setInitialState(new_initial);
-    t.setFinalState(new_final);
+    t.setInitialState(new_initial.get());
+    t.setFinalState(new_final.get());
+
+    t.addState(std::move(new_initial));
+    t.addState(std::move(new_final));
 
     return t;
 }
@@ -371,29 +401,29 @@ Transducer Transducer::timesTransducer(Transducer a, int from, int to)
     Transducer b;
     
     for ( int i = 0; i < from - 1; ++i )
-        b = Transducer::concat(b, a.copy());
+        b = Transducer::concat(std::move(b), a.copy());
 
-    auto end_state = new State();
+    auto end_state = makeState();
 
     if ( from == 0 )
-        b.initial_state -> connectTo(end_state, IO(EPS, EPS), 0);
+        b.initial_state -> connectTo(end_state.get(), IO(EPS, EPS), 0);
 
     for ( int i = std::max(from - 1, 0); i < to; ++i )
     {
         auto aa = a.copy();
-        aa.final_state -> connectTo(end_state, IO(EPS, EPS), 0);
-        b = Transducer::concat(b, aa);
+        aa.final_state -> connectTo(end_state.get(), IO(EPS, EPS), 0);
+        b = Transducer::concat(std::move(b), std::move(aa));
     }
 
-    b.addState(end_state);
-    b.final_state = end_state;
+    b.final_state = end_state.get();
+    b.addState(std::move(end_state));
     return b;
 }
 
 Transducer Transducer::concat(Transducer a, Transducer b)
 {
-    for ( auto state : b.states )
-        a.addState(state);
+    for ( auto& state : b.states )
+        a.addState(std::move(state));
 
     a.final_state -> connectTo(b.initial_state, IO(EPS, EPS), 0);
     a.setFinalState(b.final_state);
@@ -422,7 +452,7 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 		Transducer regexp_trans = RegexpParser().parse(convertUnicode(reg));
 		Transducer string_trans = RegexpParser().parse(screen(convertUnicode(out)));
 
-        for( auto s : regexp_trans.states ) //it empties output of regexp trans
+        for( const auto& s : regexp_trans.states ) //it empties output of regexp trans
 		{
 			for( auto& e : s -> edges )
 			{
@@ -438,7 +468,7 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 			}
 		}
 
-		for( auto s : string_trans.states ) //it empties input of string trans
+		for( const auto& s : string_trans.states ) //it empties input of string trans
 		{
 			for( auto& e : s -> edges )
 			{
@@ -453,11 +483,11 @@ Transducer Transducer::fromAlignmentModel(std::istream& in)
 			}
 		}
 
-		auto logic_trans = concat(regexp_trans, string_trans);
+		auto logic_trans = concat(std::move(regexp_trans), std::move(string_trans));
 
 		//importing states
-		for(auto s : logic_trans.states) 
-			t.addState(s);
+		for( auto& s : logic_trans.states) 
+			t.addState(std::move(s));
 
 		//connecting to t
 		t.initial_state -> connectTo(logic_trans.initial_state, IO(EPS, EPS), weight);
@@ -477,12 +507,12 @@ void Transducer::resetMinPaths()
 void Transducer::removeEpsilonEdges()
 {
     std::vector<Edge> new_edges;
-    for ( auto& state : states )
+    for ( const auto& state : states )
     {
         new_edges.clear();    
         for ( auto& edge : state -> edges )
         {
-            if ( !(edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == state) )
+            if ( !(edge.io.type == IO::IOType::LetterLetter && edge.io.in == EPS && edge.io.out == EPS && edge.end == state.get()) )
                 new_edges.emplace_back(edge.end, edge.io, edge.weight);
         }
         state -> edges = new_edges;
