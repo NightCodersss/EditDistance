@@ -15,12 +15,14 @@ string_type screen(string_type s);
 
 class Transducer
 {
+    friend class TransducerOptimizer;
 public:
 
     class State;
 
     struct Edge
     {
+        friend class TransducerOptimizer;
         Edge(State* end, IO io, int weight);
 
         State* end;
@@ -30,6 +32,7 @@ public:
 
     class State
     {
+        friend class TransducerOptimizer;
         friend class Transducer;
 
     public:

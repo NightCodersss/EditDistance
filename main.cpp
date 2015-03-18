@@ -5,6 +5,8 @@
 
 #include "icu.hpp"
 
+#include "transduceroptimizer.hpp"
+
 int main()
 {
 /*    
@@ -113,6 +115,7 @@ int main()
     XA.visualize(std::cout);
     std::cout << (XA.isEmpty() ? "empty" : "not empty") << '\n';
 */
+/*
     std::ifstream in("t.am");
     auto T = Transducer::fromAlignmentModel(in);
 //    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aaaa"))));
@@ -143,6 +146,14 @@ int main()
 
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
+*/
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aa"))));
+    X.visualize(std::cout);
+
+    TransducerOptimizer to(X);
+    to.optimize();
+
+    X.visualize(std::cout);
 
     return 0;
 }
