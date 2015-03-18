@@ -147,7 +147,7 @@ int main()
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
 */
-    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aaaaa"))));
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aa"))));
     X.visualize(std::cout);
 
     TransducerOptimizer to(X);

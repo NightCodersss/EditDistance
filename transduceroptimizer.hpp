@@ -15,10 +15,10 @@ public:
 
 private:
 
-    Transducer::State* dfs(Transducer::State* s);
+    void dfs(Transducer::State* s);
     void precount();
 
-    std::vector<Transducer::Edge> makeOptimizedEdges(const std::deque<Transducer::Edge>& io);
+    std::vector<Transducer::Edge> makeOptimizedEdges(const std::deque<Transducer::Edge>& io, Transducer::State* first_state);
     void removeUnusedStates();
 
     Transducer& t;

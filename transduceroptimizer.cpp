@@ -71,7 +71,7 @@ void TransducerOptimizer::dfs(Transducer::State* s)
 
             if ( !path_edges.empty() )
             {
-                path_edges.push_back(edge);
+                path_edges.push_front(edge);
                 auto edges = makeOptimizedEdges(path_edges, s);
                 new_edge = edges[0];
 
@@ -143,20 +143,21 @@ std::vector<Transducer::Edge> TransducerOptimizer::makeOptimizedEdges(const std:
         result[0].weight = weight;
     }
 
-    for ( int i = 0; i < static_cast<int>(result.size()) - 1; ++i )
+    result.back().end = s;
+
+    for ( int i = static_cast<int>(result.size()) - 2; i >= 0; --i )
     {
         auto& edge = result[i];
 
         edge.end = new Transducer::State();
         edge.end -> edges = {result[i + 1]};
     }
-    result.back().end = s;
 
     return result;
 }
 
 void TransducerOptimizer::removeUnusedStates()
-{
+{   
     std::map<Transducer::State*, bool> used, can_go_to_final;
 
     can_go_to_final[t.final_state] = true;
