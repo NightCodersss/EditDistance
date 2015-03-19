@@ -71,8 +71,10 @@ extern "C"
         {
             std::string str_;
             auto str = convertFromStringType(edge -> io.toString()).toUTF8String(str_);
+            std::cerr << "OLOLOLO!!! str_ = " << str_ << "\n";
             auto edge_tuple = Py_BuildValue("(Oi)", PyString_FromString(str_.c_str()), edge -> weight);
             PyList_Append(list, edge_tuple);
+            Py_DecRef(edge_tuple);
         }
 
         return list;
