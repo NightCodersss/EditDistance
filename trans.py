@@ -56,9 +56,6 @@ class Transducer:
     def minWay(self):
         libtrans.minWay(self.trans)
 
-    def hardDelete(self):
-        libtrans.hardDelete(self.trans)
-
     def optimize(self):
         libtrans.optimizeTransducer(self.trans)
 
