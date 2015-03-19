@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from ctypes import cdll, py_object
 libtrans = cdll.LoadLibrary('./libtrans.so')
 libtrans.getTransducerNextMinPath.restype = py_object
@@ -41,9 +43,17 @@ class Transducer:
 
     def pathsIterator(self):
         """generator of the paths"""
+        
+        words = set([])
+
         path = self.getNextMinPath()
         while path != []:
-            yield path
+            word = ''.join((filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')) for (s, _) in path)).encode('utf-8')
+            weight = sum((w for (_, w) in path))
+            if word not in words:
+                words.add(word)          
+                pth = list(filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')) for (s, _) in path)
+                yield (word, weight, pth)
             path = self.getNextMinPath()
     
     def composition(self, t):
@@ -62,10 +72,14 @@ class Transducer:
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     """iterator for min edit-distance paths"""
     X = Transducer.fromRegexp(word)
+    X.optimize()
     A = Transducer.fromRegexp(regexp)    
+    A.optimize()
     T = Transducer.fromAlignmentModel(error_model_file)    
+    T.optimize()
 
     composition = X.composition(T).composition(A)
+    composition.optimize()
 
     for path in composition.pathsIterator():
         yield path
