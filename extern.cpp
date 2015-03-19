@@ -5,6 +5,7 @@
 #include "chartype.hpp"
 #include "transducer.hpp"
 #include "icu.hpp"
+#include "transduceroptimizer.hpp"
 
 extern "C" 
 {
@@ -99,4 +100,10 @@ extern "C"
 	{
 		t -> hardDelete();
 	}
+
+    void optimizeTransducer(Transducer* t)
+    {
+        TransducerOptimizer to(*t);
+        to.optimize();        
+    }
 }

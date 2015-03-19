@@ -147,11 +147,17 @@ int main()
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
 */
-    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aa"))));
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("a[a-b]a"))));
     X.visualize(std::cout);
+
+    std::cout << "Automat size:\n";
+    X.printSize(std::cout);
 
     TransducerOptimizer to(X);
     to.optimize();
+
+    std::cout << "Optimized automat size:\n";
+    X.printSize(std::cout);
 
     X.visualize(std::cout);
 
