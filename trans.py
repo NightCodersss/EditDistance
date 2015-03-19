@@ -12,7 +12,6 @@ class Transducer:
         if trans is None:
             trans = libtrans.newTransducer()
         self.trans = trans
-        self.resetMinPaths()
     
     @staticmethod
     def fromRegexp(regex):
