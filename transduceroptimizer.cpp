@@ -141,7 +141,7 @@ std::vector<Transducer::Edge> TransducerOptimizer::makeOptimizedEdges(const std:
     for ( size_t i = 0; i < in.size(); ++i )
         result.push_back(Transducer::Edge(nullptr, IO(in[i], out[i]), 0));
 
-    if ( /*weight != 0 ||*/ (in_edges_number[s] > 1 && first_state -> edges.size() > 1) )
+    if ( weight != 0 || (in_edges_number[s] > 1 && first_state -> edges.size() > 1) )
     {
         if ( result.empty() )
             result.push_back(Transducer::Edge(nullptr, IO(EPS, EPS), 0));
