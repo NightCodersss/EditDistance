@@ -46,6 +46,7 @@ def test_random_regex(n, k):
             match = re.match(r, s)
 
             ourautomat = Transducer.fromRegexp(s.encode('utf-8')).composition(Transducer.fromRegexp(r.encode('utf-8')))
+            ourautomat.optimize()
             ourautomat.visualize()
 #        print "Our automat said ", ourautomat.isEmpty()
         
@@ -76,6 +77,7 @@ def test_levinstein(n):
         print "comp is started"
         composition = X.composition(T).composition(A)
         print "compsed"
+        composition.optimize()
         composition.visualize()
         composition.minWay()           
         path = composition.pathsIterator().next()

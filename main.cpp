@@ -147,19 +147,20 @@ int main()
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
 */
-    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("a[a-b]a"))));
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("[esj-u]{0,10}[eogkuvs-v]*"))));
+    TransducerOptimizer to1(X);
+    to1.optimize();
     X.visualize(std::cout);
+    
+    auto T = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("m"))));
+    TransducerOptimizer to2(T);
+    to2.optimize();
+    T.visualize(std::cout);
 
-    std::cout << "Automat size:\n";
-    X.printSize(std::cout);
-
-    TransducerOptimizer to(X);
-    to.optimize();
-
-    std::cout << "Optimized automat size:\n";
-    X.printSize(std::cout);
-
-    X.visualize(std::cout);
+    auto XT = X.composition(std::move(T));
+    TransducerOptimizer to3(XT);
+    to3.optimize();
+    XT.visualize(std::cout);
 
     return 0;
 }

@@ -73,11 +73,17 @@ void TransducerOptimizer::dfs(Transducer::State* s)
             {
                 path_edges.push_front(edge);
                 auto edges = makeOptimizedEdges(path_edges, s);
-                new_edge = edges[0];
+                if ( edges.size() > 0 )
+                {
+                    new_edge = edges[0];
 
-//                for ( const auto& edge : edges )
-//                    t.addState(ptr<Transducer::State>(edge.end));
-
+    //                for ( const auto& edge : edges )
+    //                    t.addState(ptr<Transducer::State>(edge.end));
+                }
+                else //merging states
+                {
+                    
+                }
                 path_edges.clear();
             }
 
@@ -135,7 +141,7 @@ std::vector<Transducer::Edge> TransducerOptimizer::makeOptimizedEdges(const std:
     for ( size_t i = 0; i < in.size(); ++i )
         result.push_back(Transducer::Edge(nullptr, IO(in[i], out[i]), 0));
 
-    if ( weight != 0 || (in_edges_number[s] > 1 && first_state -> edges.size() > 1) )
+    if ( /*weight != 0 ||*/ (in_edges_number[s] > 1 && first_state -> edges.size() > 1) )
     {
         if ( result.empty() )
             result.push_back(Transducer::Edge(nullptr, IO(EPS, EPS), 0));
@@ -143,7 +149,8 @@ std::vector<Transducer::Edge> TransducerOptimizer::makeOptimizedEdges(const std:
         result[0].weight = weight;
     }
 
-    result.back().end = s;
+    if ( !result.empty() )
+        result.back().end = s;
 
     for ( int i = static_cast<int>(result.size()) - 2; i >= 0; --i )
     {
