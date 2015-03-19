@@ -46,7 +46,6 @@ def test_random_regex(n, k):
 
             ourautomat = Transducer.fromRegexp(s.encode('utf-8')).composition(Transducer.fromRegexp(r.encode('utf-8')))
             ourautomat.optimize()
-            ourautomat.visualize()
 #        print "Our automat said ", ourautomat.isEmpty()
         
             pythonregex = (match == None or match.group() != s)
@@ -76,9 +75,9 @@ def test_levinstein(n):
         print "comp is started"
         composition = X.composition(T).composition(A)
         print "compsed"
-#        composition.optimize()
+        composition.optimize()
 #        composition.visualize()
-#        composition.minWay()           
+        composition.minWay()           
         path = composition.pathsIterator().next()
 #        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
         minway = sum([w for (s, w) in path]) 
@@ -111,9 +110,13 @@ def test_of_weight(n):
 
         
 def test():
-    random.seed(4)
-#    test_random_regex(100, 100)
-#    test_of_weight(100)
-    test_levinstein(100)
+    random.seed(1)
+    if not test_random_regex(50, 20):
+        return False
+    if not test_of_weight(50):
+        return False
+    if not test_levinstein(50):
+        return False
+    return True
 
 test()

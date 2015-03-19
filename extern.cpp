@@ -18,13 +18,7 @@ extern "C"
     {
         auto ucs = UnicodeString::fromUTF8(regexp);
 
-        std::cout << "UCS = " << ucs << '\n';
-
         string_type s = convertUnicode(ucs);
-
-        for ( auto i : s )
-            std::cout << "Int: " << i << ' ';
-        std::cout << '\n';
 
         return new Transducer(Transducer::fromRegexp(s));
     }
@@ -71,7 +65,6 @@ extern "C"
         {
             std::string str_;
             auto str = convertFromStringType(edge -> io.toString()).toUTF8String(str_);
-            std::cerr << "OLOLOLO!!! str_ = " << str_ << "\n";
             auto edge_tuple = Py_BuildValue("(Oi)", PyString_FromString(str_.c_str()), edge -> weight);
             PyList_Append(list, edge_tuple);
             Py_DecRef(edge_tuple);
