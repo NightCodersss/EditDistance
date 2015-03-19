@@ -110,7 +110,7 @@ def test_of_weight(n):
 
         
 def test():
-    random.seed(1)
+    random.seed(4)
     if not test_random_regex(50, 20):
         return False
     if not test_of_weight(50):

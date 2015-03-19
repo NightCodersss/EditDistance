@@ -48,12 +48,11 @@ class Transducer:
 
         path = self.getNextMinPath()
         while path != []:
-            word = ''.join((filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')) for (s, _) in path)).encode('utf-8')
+            word = ''.join((filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')[2]) for (s, _) in path)).encode('utf-8')
             weight = sum((w for (_, w) in path))
             if word not in words:
                 words.add(word)          
-                pth = list(filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')) for (s, _) in path)
-                yield (word, weight, pth)
+                yield (word, weight, path)
             path = self.getNextMinPath()
     
     def composition(self, t):
@@ -72,14 +71,14 @@ class Transducer:
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     """iterator for min edit-distance paths"""
     X = Transducer.fromRegexp(word)
-    X.optimize()
+#    X.optimize()
     A = Transducer.fromRegexp(regexp)    
-    A.optimize()
+#    A.optimize()
     T = Transducer.fromAlignmentModel(error_model_file)    
-    T.optimize()
+#    T.optimize()
 
     composition = X.composition(T).composition(A)
-    composition.optimize()
+#    composition.optimize()
 
     for path in composition.pathsIterator():
         yield path
