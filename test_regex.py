@@ -38,7 +38,6 @@ def test_random_regex(n, k):
                 print "Failed on "+s
                 return False
                 f = False
-            t.hardDelete()
 
         for _ in range(k):
             s = rstr.xeger("[a-z][a-z]*")
@@ -46,7 +45,7 @@ def test_random_regex(n, k):
             match = re.match(r, s)
 
             ourautomat = Transducer.fromRegexp(s.encode('utf-8')).composition(Transducer.fromRegexp(r.encode('utf-8')))
-            ourautomat.visualize()
+            ourautomat.optimize()
 #        print "Our automat said ", ourautomat.isEmpty()
         
             pythonregex = (match == None or match.group() != s)
@@ -56,27 +55,28 @@ def test_random_regex(n, k):
                 print "Failed on "+s
                 return False
                 f = False
-            ourautomat.hardDelete()
     return f
 
 def test_levinstein(n):
     print "levenstein"
 
     for _ in range(n):
-        s1 = rstr.xeger("[a-b]{1,15}")
-        s2 = rstr.xeger("[a-b]{1,15}")
+        s1 = rstr.xeger("[a-z]{1,15}")
+        s2 = rstr.xeger("[a-z]{1,15}")
 
 #        path = pathsFromWordToRegexp(s1.encode('utf-8'), s2.encode('utf-8'), 't.am').next()
         X = Transducer.fromRegexp(s1.encode('utf-8'))
+#        X.optimize()
         A = Transducer.fromRegexp(s2.encode('utf-8'))    
-        T = Transducer.fromAlignmentModel('t.am')    
-        T.visualize()
-        print "OLO"
+#        A.optimize()
+        T = Transducer.fromAlignmentModel('tbig.am')    
+#        T.optimize()
 
         print "comp is started"
         composition = X.composition(T).composition(A)
         print "compsed"
-        composition.visualize()
+        composition.optimize()
+#        composition.visualize()
         composition.minWay()           
         path = composition.pathsIterator().next()
 #        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
@@ -110,9 +110,13 @@ def test_of_weight(n):
 
         
 def test():
-    random.seed(4)
-    test_random_regex(100, 100)
-    test_of_weight(100)
-    test_levinstein(100)
+    random.seed(1)
+    if not test_random_regex(50, 20):
+        return False
+    if not test_of_weight(50):
+        return False
+    if not test_levinstein(50):
+        return False
+    return True
 
 test()

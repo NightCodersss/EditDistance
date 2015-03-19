@@ -59,7 +59,7 @@ string_type IO::toString() const
         if ( type == IOType::UnionUnion ) 
             result.insert(std::end(result), std::begin(result), std::prev(std::end(result)));
         else
-            result.emplace_back(out);
+            result.emplace_back(out != EPS ? out : EPS_char);
         return result;
     }
     case IOType::LetterLetter:

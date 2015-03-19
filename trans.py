@@ -56,8 +56,8 @@ class Transducer:
     def minWay(self):
         libtrans.minWay(self.trans)
 
-    def hardDelete(self):
-        libtrans.hardDelete(self.trans)
+    def optimize(self):
+        libtrans.optimizeTransducer(self.trans)
 
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     """iterator for min edit-distance paths"""

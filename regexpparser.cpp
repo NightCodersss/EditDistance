@@ -187,23 +187,26 @@ Transducer RegexpParser::parseKlenee()
         }
     }
 
-    if ( regexp[pos] == '*' )
+    if ( pos < regexp.size() )
     {
-        match('*');
-        t = Transducer::klenee(std::move(t));
-    }
-    else if ( regexp[pos] == '{' )
-    {
-        match('{');
-        int from = parseInt();
-        match(',');
-        int to = parseInt();
+        if ( regexp[pos] == '*' )
+        {
+            match('*');
+            t = Transducer::klenee(std::move(t));
+        }
+        else if ( regexp[pos] == '{' )
+        {
+            match('{');
+            int from = parseInt();
+            match(',');
+            int to = parseInt();
 
-        if ( from > to )
-            failWith("Incorrect regexp: {m, n} - m > n");
+            if ( from > to )
+                failWith("Incorrect regexp: {m, n} - m > n");
 
-        t = Transducer::timesTransducer(std::move(t), from, to);
-        match('}');
+            t = Transducer::timesTransducer(std::move(t), from, to);
+            match('}');
+        }
     }
 
     return t;
