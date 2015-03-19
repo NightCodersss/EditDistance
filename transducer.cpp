@@ -35,11 +35,6 @@ void Transducer::State::connectTo(Transducer::State* s, IO io, int w)
     edges.emplace_back(s, io, w);
 }
 
-void Transducer::hardDelete()
-{
-	states.clear();
-}
-    
 unsigned long long Transducer::State::id() const { return reinterpret_cast<unsigned long long>(this) % 10000; }    
     
 Transducer::Transducer()

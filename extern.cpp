@@ -91,11 +91,6 @@ extern "C"
 		t->minWay();
 	}
 
-	void hardDelete(Transducer* t)
-	{
-		t -> hardDelete();
-	}
-
     void optimizeTransducer(Transducer* t)
     {
         TransducerOptimizer to(*t);
