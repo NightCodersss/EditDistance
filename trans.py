@@ -75,13 +75,14 @@ class Transducer:
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     """iterator for min edit-distance paths"""
     X = Transducer.fromRegexp(word)
+#    X.optimize()
     A = Transducer.fromRegexp(regexp)        
+#    A.optimize()
     T = Transducer.fromAlignmentModel(error_model_file)
+    T.optimize()
 
     composition = X.composition(T).composition(A)
-#    composition.visualize()
     composition.optimize()
-#    composition.visualize()
 
     for path in composition.pathsIterator():
         yield path

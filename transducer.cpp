@@ -548,6 +548,15 @@ Transducer::Path Transducer::getNextMinPath()
         if ( u == final_state )
             return p;
     }    
+
+    while ( !paths.empty() )
+    {
+        auto p = *std::begin(paths);
+        paths.erase(std::begin(paths));
+        if ( p.path.back() -> end == final_state )
+            return p;                
+    }
+
     return Path{-1, nullptr, {}};
 }
 
