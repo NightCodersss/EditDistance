@@ -59,8 +59,8 @@ class Transducer:
     def composition(self, t):
         """self and t are no longer valid after composition"""
         c = libtrans.transducerComposition(self.trans, t.trans)
-        self.trans = None
-        t.trans    = None
+#        self.trans = None
+#        t.trans    = None
         return Transducer(c)
 
     def minWay(self):
@@ -72,14 +72,13 @@ class Transducer:
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     """iterator for min edit-distance paths"""
     X = Transducer.fromRegexp(word)
-#    X.optimize()
-    A = Transducer.fromRegexp(regexp)    
-#    A.optimize()
-    T = Transducer.fromAlignmentModel(error_model_file)    
-#    T.optimize()
+    A = Transducer.fromRegexp(regexp)        
+    T = Transducer.fromAlignmentModel(error_model_file)
 
     composition = X.composition(T).composition(A)
-#    composition.optimize()
+#    composition.visualize()
+    composition.optimize()
+#    composition.visualize()
 
     for path in composition.pathsIterator():
         yield path

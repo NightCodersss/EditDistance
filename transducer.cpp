@@ -137,9 +137,9 @@ Transducer Transducer::composition(Transducer transducer)
 
         State* s = newstates[std::make_pair(s1, s2)];
 
-        for ( auto e1 : s1->edges )
+        for ( const auto& e1 : s1->edges )
         {
-            for ( auto e2 : s2->edges )
+            for ( const auto& e2 : s2->edges )
             {
                 if ( e1.io.type == IO::IOType::LetterLetter && e2.io.type == IO::IOType::LetterLetter )
                     assert((e1.io.out == e2.io.in) == e1.io.canBeCompositedTo(e2.io));
