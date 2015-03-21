@@ -50,7 +50,7 @@ Transducer::Transducer()
     addState(std::move(st));
     resetMinPaths();
 }
-    
+
 Transducer::Transducer(Transducer&& t) : states(std::move(t.states))
 {
     initial_state = t.initial_state;

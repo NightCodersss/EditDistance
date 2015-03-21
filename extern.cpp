@@ -76,8 +76,8 @@ extern "C"
     Transducer* transducerComposition(Transducer* t1, Transducer* t2)
     {
         auto t = new Transducer(t1 -> composition(std::move(*t2)));
-        delete t1;
-        delete t2;
+//        delete t1;
+//        delete t2;
         return t;
     }
 
@@ -95,6 +95,11 @@ extern "C"
 	{
 		t -> hardDelete();
 	}
+    
+    void release(Transducer* t)
+    {
+        delete t;
+    }
 
     void optimizeTransducer(Transducer* t)
     {

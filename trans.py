@@ -15,6 +15,9 @@ class Transducer:
             trans = libtrans.newTransducer()
         self.trans = trans
         self.resetMinPaths()
+
+    def __del__(self):
+        libtrans.release(self.trans)
     
     @staticmethod
     def fromRegexp(regex):
