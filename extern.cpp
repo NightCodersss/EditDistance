@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <stdexcept>
 #include <Python.h>
 #include "chartype.hpp"
 #include "transducer.hpp"
@@ -36,6 +37,8 @@ extern "C"
     Transducer* transducerFromAligmentModel(const char* filename)
     {
         std::ifstream fin(filename);
+        if ( !fin )
+            throw std::logic_error(std::string("Can't open file ") + filename);
         auto t = Transducer::fromAlignmentModel(fin);
         return new Transducer(std::move(t));
     }
