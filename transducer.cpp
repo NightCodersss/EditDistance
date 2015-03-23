@@ -45,7 +45,7 @@ Transducer::Transducer()
     addState(std::move(st));
     resetMinPaths();
 }
-    
+
 Transducer::Transducer(Transducer&& t) : states(std::move(t.states))
 {
     initial_state = t.initial_state;
@@ -78,6 +78,7 @@ void Transducer::addState(ptr<State> newstate)
 
 void Transducer::addEpsilonTransitions()
 {
+    epsilon_edges_removed = false;
     for ( auto& state : states )
         state -> connectTo(state.get(), IO(EPS, EPS), 0);
 }
@@ -132,9 +133,9 @@ Transducer Transducer::composition(Transducer transducer)
 
         State* s = newstates[std::make_pair(s1, s2)];
 
-        for ( auto e1 : s1->edges )
+        for ( const auto& e1 : s1->edges )
         {
-            for ( auto e2 : s2->edges )
+            for ( const auto& e2 : s2->edges )
             {
                 if ( e1.io.type == IO::IOType::LetterLetter && e2.io.type == IO::IOType::LetterLetter )
                     assert((e1.io.out == e2.io.in) == e1.io.canBeCompositedTo(e2.io));
@@ -519,8 +520,6 @@ Transducer::Path Transducer::getNextMinPath()
 {
     if ( !epsilon_edges_removed )
         removeEpsilonEdges();
-    
-    printSize(std::cout);
 
     while ( !paths.empty() && paths_count[final_state] <= MAX_PATHS_SIZE )
     {
@@ -543,6 +542,15 @@ Transducer::Path Transducer::getNextMinPath()
         if ( u == final_state )
             return p;
     }    
+
+    while ( !paths.empty() )
+    {
+        auto p = *std::begin(paths);
+        paths.erase(std::begin(paths));
+        if ( p.path.back() -> end == final_state )
+            return p;                
+    }
+
     return Path{-1, nullptr, {}};
 }
 

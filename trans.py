@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from ctypes import cdll, py_object
 libtrans = cdll.LoadLibrary('./libtrans.so')
 libtrans.getTransducerNextMinPath.restype = py_object
@@ -12,6 +14,11 @@ class Transducer:
         if trans is None:
             trans = libtrans.newTransducer()
         self.trans = trans
+        self.resetMinPaths()
+
+    def __del__(self):
+        libtrans.release(self.trans)
+
     
     @staticmethod
     def fromRegexp(regex):
@@ -40,16 +47,23 @@ class Transducer:
 
     def pathsIterator(self):
         """generator of the paths"""
+        
+        words = set([])
+
         path = self.getNextMinPath()
         while path != []:
-            yield path
+            word   = ''.join((filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')[2]) for (s, _) in path)).encode('utf-8')
+            weight = sum((w for (_, w) in path))
+            if word not in words:
+                words.add(word)          
+            yield (word, weight, path)
             path = self.getNextMinPath()
     
     def composition(self, t):
         """self and t are no longer valid after composition"""
         c = libtrans.transducerComposition(self.trans, t.trans)
-        self.trans = None
-        t.trans    = None
+#        self.trans = None
+#        t.trans    = None
         return Transducer(c)
 
     def minWay(self):
@@ -61,10 +75,14 @@ class Transducer:
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     """iterator for min edit-distance paths"""
     X = Transducer.fromRegexp(word)
-    A = Transducer.fromRegexp(regexp)    
-    T = Transducer.fromAlignmentModel(error_model_file)    
+    X.optimize()
+    A = Transducer.fromRegexp(regexp)        
+    A.optimize()
+    T = Transducer.fromAlignmentModel(error_model_file)
+    T.optimize()
 
     composition = X.composition(T).composition(A)
+    composition.optimize()
 
     for path in composition.pathsIterator():
         yield path

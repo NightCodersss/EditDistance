@@ -147,20 +147,47 @@ int main()
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
 */
-    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("[esj-u]{0,10}[eogkuvs-v]*"))));
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("abababababtaaaba"))));
+//    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("bababtba"))));
     TransducerOptimizer to1(X);
-    to1.optimize();
-    X.visualize(std::cout);
+//    to1.optimize();
+//    X.visualize(std::cout);
     
-    auto T = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("m"))));
-    TransducerOptimizer to2(T);
+    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aaatbbbaaababbabb"))));
+//    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("tbbbbabbabb"))));
+//    A.visualize(std::cout);
+    TransducerOptimizer to2(A);
     to2.optimize();
-    T.visualize(std::cout);
+//    A.visualize(std::cout);
 
-    auto XT = X.composition(std::move(T));
-    TransducerOptimizer to3(XT);
+    std::ifstream in("tweight.am");
+    auto T = Transducer::fromAlignmentModel(in);
+//    T.visualize(std::cout);
+    TransducerOptimizer to3(T);
     to3.optimize();
-    XT.visualize(std::cout);
+//    T.visualize(std::cout);
+
+    auto XTA = X.composition(std::move(T)).composition(std::move(A));
+    TransducerOptimizer to4(XTA);
+    to4.optimize();
+    XTA.removeEpsilonEdges();
+    XTA.visualize(std::cout);
+
+    XTA.minWay();
+    XTA.resetMinPaths();
+
+    auto path = XTA.getNextMinPath();
+    std::string result;
+
+    for ( const auto& edge : path.path )
+    {
+        std::string str_;
+        auto str = convertFromStringType(edge -> io.toString()).toUTF8String(str_);
+        result += "(" + str_ + " " + std::to_string(edge -> weight) + ")";
+    }
+
+    std::cout << "Path cost: " << path.cost << '\n';
+    std::cout << "Path: " << result << '\n';
 
     return 0;
 }
