@@ -525,8 +525,6 @@ Transducer::Path Transducer::getNextMinPath()
 {
     if ( !epsilon_edges_removed )
         removeEpsilonEdges();
-    
-    printSize(std::cout);
 
     while ( !paths.empty() && paths_count[final_state] <= MAX_PATHS_SIZE )
     {
