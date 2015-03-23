@@ -100,13 +100,13 @@ def test():
     random.seed(16)
 #    random.seed(4)
 #    random.seed(1)
-    if not test_random_regex(500, 100):
+    if not test_random_regex(50, 20):
         return False
     print "Passed regexp tests"
-    if not test_of_weight(500):
+    if not test_of_weight(50):
         return False
     print "Passed weight tests"
-    if not test_levinstein(500):
+    if not test_levinstein(50):
         return False
     print "Passed levenshtein tests"
     return True
