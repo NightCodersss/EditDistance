@@ -56,7 +56,6 @@ class Transducer:
             if word not in words:
                 words.add(word)          
             yield (word, weight, path)
-#            yield path
             path = self.getNextMinPath()
     
     def composition(self, t):
@@ -75,7 +74,7 @@ class Transducer:
 def pathsFromWordToRegexp(word, regexp, error_model_file):
     """iterator for min edit-distance paths"""
     X = Transducer.fromRegexp(word)
-#    X.optimize()
+    X.optimize()
     A = Transducer.fromRegexp(regexp)        
     A.optimize()
     T = Transducer.fromAlignmentModel(error_model_file)
