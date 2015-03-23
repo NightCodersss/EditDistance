@@ -147,27 +147,31 @@ int main()
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
 */
-    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("a"))));
+    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("abababababtaaaba"))));
+//    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("bababtba"))));
     TransducerOptimizer to1(X);
-    to1.optimize();
+//    to1.optimize();
 //    X.visualize(std::cout);
     
-    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("b"))));
+    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("aaatbbbaaababbabb"))));
+//    auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("tbbbbabbabb"))));
+//    A.visualize(std::cout);
     TransducerOptimizer to2(A);
     to2.optimize();
 //    A.visualize(std::cout);
 
     std::ifstream in("tweight.am");
     auto T = Transducer::fromAlignmentModel(in);
-    T.visualize(std::cout);
+//    T.visualize(std::cout);
     TransducerOptimizer to3(T);
     to3.optimize();
-    T.visualize(std::cout);
+//    T.visualize(std::cout);
 
     auto XTA = X.composition(std::move(T)).composition(std::move(A));
     TransducerOptimizer to4(XTA);
     to4.optimize();
-//    XTA.visualize(std::cout);
+    XTA.removeEpsilonEdges();
+    XTA.visualize(std::cout);
 
     XTA.minWay();
     XTA.resetMinPaths();

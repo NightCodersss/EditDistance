@@ -47,16 +47,16 @@ class Transducer:
     def pathsIterator(self):
         """generator of the paths"""
         
-#        words = set([])
+        words = set([])
 
         path = self.getNextMinPath()
         while path != []:
-#            word   = ''.join((filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')[2]) for (s, _) in path)).encode('utf-8')
-#            weight = sum((w for (_, w) in path))
-#            if word not in words:
-#                words.add(word)          
-#            yield (word, weight, path)
-            yield path
+            word   = ''.join((filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')[2]) for (s, _) in path)).encode('utf-8')
+            weight = sum((w for (_, w) in path))
+            if word not in words:
+                words.add(word)          
+            yield (word, weight, path)
+#            yield path
             path = self.getNextMinPath()
     
     def composition(self, t):
@@ -77,7 +77,7 @@ def pathsFromWordToRegexp(word, regexp, error_model_file):
     X = Transducer.fromRegexp(word)
 #    X.optimize()
     A = Transducer.fromRegexp(regexp)        
-#    A.optimize()
+    A.optimize()
     T = Transducer.fromAlignmentModel(error_model_file)
     T.optimize()
 

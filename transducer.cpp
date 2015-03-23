@@ -83,6 +83,7 @@ void Transducer::addState(ptr<State> newstate)
 
 void Transducer::addEpsilonTransitions()
 {
+    epsilon_edges_removed = false;
     for ( auto& state : states )
         state -> connectTo(state.get(), IO(EPS, EPS), 0);
 }

@@ -80,8 +80,8 @@ def test_levinstein(n):
         composition.minWay()           
         path = composition.pathsIterator().next()
 #        path = pathsFromWordToRegexp("bba", "bab", 't.am').next()
-#        minway = sum((w for (s, w) in path[2])) 
-        minway = sum((w for (s, w) in path)) 
+        minway = sum((w for (s, w) in path[2])) 
+#        minway = sum((w for (s, w) in path)) 
         print "Levenstein said ", levenshtein(s1, s2)
         print "Transducer said ", minway
 
@@ -100,12 +100,12 @@ def test_of_weight(n):
         s22 = rstr.xeger("[a-b]{1,15}")
         
         path = pathsFromWordToRegexp((s11 + 't' + s12).encode('utf-8'), (s21 + 't' + s22).encode('utf-8'), 'tweight.am').next() 
-#        minway = sum((w for (s, w) in path[2])) 
-        minway = sum((w for (s, w) in path)) 
+        minway = sum((w for (s, w) in path[2])) 
+#        minway = sum((w for (s, w) in path)) 
         lev = levenshtein(s11,s21) + levenshtein(s12, s22)
         print 'Lev: {}; Trans: {}'.format(lev, minway)
         if lev != minway:
-            print 'Failed on ({} t {}, {} t {})'.format(s11, s12, s21, s22)
+            print 'Failed on ({} t {}, {} t {}), found path: {}'.format(s11, s12, s21, s22, path)
             print 'Lev: {}; Trans: {}'.format(lev, minway)
             return False
     return True

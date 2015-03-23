@@ -46,7 +46,7 @@ void TransducerOptimizer::dfs(Transducer::State* s)
 
     used[s] = true;
 
-    if ( in_edges_number[s] == 1 && s -> edges.size() == 1 )
+    if ( in_edges_number[s] == 1 && s -> edges.size() == 1 && s != t.final_state )
     {
         const auto& edge = s -> edges[0];
 
