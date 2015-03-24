@@ -107,7 +107,7 @@ X.visualize(std::cout);
 
 Формат файла:
 ```
-number_of_edges id_of_final_state
+number_of_states number_of_edges id_of_final_state
 start in out weight end
 start in out weight end
 ...
