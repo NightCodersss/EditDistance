@@ -210,6 +210,7 @@ paths = pathsFromWordToRegexp(s1.encode('utf-8'), s2.encode('utf-8'), 'tbig.am')
 ```
 
 Где:
+
 * `word` - слово из языка, к которому привели исходное
 * `weight` - стоимость перевода
 * `pathinfo` - дополнительная информацию о пути (список IO ребер пути) 
