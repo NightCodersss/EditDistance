@@ -68,10 +68,14 @@ extern "C"
         {
             std::string str_;
             auto str = convertFromStringType(edge -> io.toString()).toUTF8String(str_);
-            auto edge_tuple = Py_BuildValue("(Oi)", PyString_FromString(str_.c_str()), edge -> weight);
-            PyList_Append(list, edge_tuple);
-            Py_DecRef(edge_tuple);
-        }
+//            auto edge_tuple = Py_BuildValue("(Oi)", PyString_FromString(str_.c_str()), edge -> weight);
+//            PyList_Append(list, edge_tuple);
+//            Py_DecRef(edge_tuple);
+  			
+			// There could be a block, but in fact if our left automat does not contain blocks, so does composition
+			PyList_Append(list, edge -> io.in);			
+			PyList_Append(list, edge -> io.out);
+  		}
 
         return list;
     }
