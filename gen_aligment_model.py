@@ -28,4 +28,5 @@ def gen_model(filename, letters):
 
     f.close()
 
+gen_model('tenglishandpunct.am', map(chr, range(ord('a'), ord('z') + 1)) + [u'\\s', u'ε'])
 gen_model('trussianandpunct.am', gen_letters('warandpeace.txt'))

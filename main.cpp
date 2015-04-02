@@ -147,6 +147,7 @@ int main()
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
 */
+/*
     auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("abababababtaaaba"))));
 //    auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece("bababtba"))));
     TransducerOptimizer to1(X);
@@ -188,6 +189,45 @@ int main()
 
     std::cout << "Path cost: " << path.cost << '\n';
     std::cout << "Path: " << result << '\n';
+*/
+    for(int i = 0; i < 100; ++i)
+    {
+        std::ifstream test(("regexes" + std::to_string(i) + ".dat").c_str());
+        std::string regex, text, spoiled_text;
+        test >> regex >> text >> spoiled_text;
 
+        auto X = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece(spoiled_text))));
+        TransducerOptimizer to1(X);
+        to1.optimize();
+
+        auto A = Transducer::fromRegexp(convertUnicode(UnicodeString::fromUTF8(StringPiece(regex))));
+        TransducerOptimizer to2(A);
+        to2.optimize();
+
+        std::ifstream in("tenglishandpunct.am");
+        auto T = Transducer::fromAlignmentModel(in);
+        TransducerOptimizer to3(T);
+        to3.optimize();
+
+        auto XTA = X.composition(std::move(T)).composition(std::move(A));
+        TransducerOptimizer to4(XTA);
+        to4.optimize();
+        XTA.removeEpsilonEdges();
+
+        XTA.resetMinPaths();
+
+        auto path = XTA.getNextMinPath();
+        std::string result;
+
+        for ( const auto& edge : path.path )
+        {
+            std::string str_;
+            auto str = convertFromStringType(edge -> io.toString()).toUTF8String(str_);
+            result += "(" + str_ + " " + std::to_string(edge -> weight) + ")";
+        }
+
+        std::cout << "Path cost: " << path.cost << '\n';
+        std::cout << "Path: " << result << '\n';
+    }
     return 0;
 }

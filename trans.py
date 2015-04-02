@@ -43,7 +43,13 @@ class Transducer:
 
     def getNextMinPath(self):
         """It's used by pathsIterator"""
-        return libtrans.getTransducerNextMinPath(self.trans)
+        path = libtrans.getTransducerNextMinPath(self.trans)
+        i = 0
+        newpath = []
+        while i < len(path) - 1:
+            newpath.append((path[i], path[i + 1]))
+            i += 2
+        return newpath
 
     def pathsIterator(self):
         """generator of the paths"""
@@ -51,7 +57,7 @@ class Transducer:
         words = set([])
 
         path = self.getNextMinPath()
-        while path != []:
+        while path != []:            
             word   = ''.join((filter(lambda x: x not in (u'\u03b5',), s.decode('utf-8')[2]) for (s, _) in path)).encode('utf-8')
             weight = sum((w for (_, w) in path))
             if word not in words:
